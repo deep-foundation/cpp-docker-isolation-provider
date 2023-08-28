@@ -16,6 +16,12 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(PythonLibs REQUIRED)
 
+add_executable(cpp-docker-isolation-provider
+        httplib.h
+        docker-isolation-provider.cpp
+)
+
+
 # Link against Boost libraries
 TARGET_LINK_LIBRARIES(cpp-docker-isolation-provider ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
 
