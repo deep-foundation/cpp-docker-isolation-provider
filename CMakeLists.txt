@@ -18,6 +18,8 @@ find_package(PythonLibs REQUIRED)
 
 add_executable(cpp-docker-isolation-provider
         httplib.h
+        compiler.h
+        compiler.cpp
         docker-isolation-provider.cpp
 )
 
