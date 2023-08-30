@@ -5,7 +5,7 @@ set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 INCLUDE_DIRECTORIES(
-  "${CMAKE_SOURCE_DIR}/python"
+        "${CMAKE_SOURCE_DIR}/python"
 )
 
 # Find Boost package
@@ -17,12 +17,14 @@ include_directories(${Boost_INCLUDE_DIRS})
 find_package(PythonLibs REQUIRED)
 
 add_executable(cpp-docker-isolation-provider
+        nlohmann/json.hpp
         httplib.h
         compiler.h
         compiler.cpp
         docker-isolation-provider.cpp
 )
 
+target_include_directories(cpp-docker-isolation-provider PRIVATE ${CMAKE_SOURCE_DIR}/nlohmann)
 
 # Link against Boost libraries
 TARGET_LINK_LIBRARIES(cpp-docker-isolation-provider ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "nlohmann/json.hpp"
 
 class Compiler {
 public:

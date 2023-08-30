@@ -16,8 +16,15 @@ int main(void) {
 
     svr.Post("/call", [](const httplib::Request& req, httplib::Response &res) {
         const auto& json_data = req.body;
-        std::string result = Compiler::compileAndExecute(json_data);
-        res.set_content(result, "application/json");
+        try {
+            json json_obj = json::parse(json_data);
+            std::string code = json_obj["params"]["code"].get<std::string>();
+
+            std::string result = Compiler::compileAndExecute(code);
+            res.set_content(result, "application/json");
+        } catch (const std::exception& e) {
+            res.set_content("Invalid JSON format: " + std::string(e.what()), "application/json");
+        }
     });
 
     svr.Post("/http-call", [](const httplib::Request &, httplib::Response &res) {
