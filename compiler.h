@@ -3,6 +3,7 @@
 
 #include <string>
 #include "httplib.h"
+#include <ctime>
 #include <cstdlib>
 #include <iostream>
 #include <vector>

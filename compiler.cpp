@@ -1,9 +1,16 @@
 #include "compiler.h"
 
 std::string Compiler::compileAndExecute(const std::string &code) {
-    std::string temp_dir = "/tmp";
-    std::string source_path = temp_dir + "/temp.cpp";
-    std::string exec_path = temp_dir + "/temp";
+    srand(static_cast<unsigned int>(time(nullptr)));
+    std::string random_folder_name = "/tmp/cpp_" + std::to_string(rand());
+
+    std::string source_path = random_folder_name + "/temp.cpp";
+    std::string exec_path = random_folder_name + "/temp";
+
+    int create_dir_result = mkdir(random_folder_name.c_str(), 0700);
+    if (create_dir_result != 0) {
+        return "Failed to create temporary directory.";
+    }
 
     std::ofstream source_file(source_path);
     if (!source_file) {
@@ -45,8 +52,11 @@ std::string Compiler::compileAndExecute(const std::string &code) {
         pclose(execute_pipe);
     }
 
-    //std::remove(source_path.c_str());
-    //std::remove(exec_path.c_str());
+    /*std::string remove_dir_command = "rm -r " + random_folder_name;
+    int remove_dir_result = system(remove_dir_command.c_str());
+    if (remove_dir_result != 0) {
+        return "Failed to remove temporary directory.";
+    }*/
 
     return execute_output;
 }
