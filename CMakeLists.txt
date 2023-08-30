@@ -24,11 +24,10 @@ add_executable(cpp-docker-isolation-provider
         docker-isolation-provider.cpp
 )
 
-target_include_directories(cpp-docker-isolation-provider PRIVATE ${CMAKE_SOURCE_DIR}/nlohmann)
-
 # Link against Boost libraries
 TARGET_LINK_LIBRARIES(cpp-docker-isolation-provider ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
 
+target_include_directories(cpp-docker-isolation-provider PRIVATE ${CMAKE_SOURCE_DIR}/nlohmann)
 
 set_target_properties(cpp-docker-isolation-provider
   PROPERTIES
