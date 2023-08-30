@@ -2,6 +2,7 @@
 #define COMPILER_H
 
 #include <string>
+#include <Python.h>
 #include "httplib.h"
 #include <ctime>
 #include <cstdlib>
@@ -9,6 +10,8 @@
 #include <vector>
 #include <map>
 #include "nlohmann/json.hpp"
+#include "PyCppBridge.h"
+#include "DeepClientCppWrapper.h"
 
 class Compiler {
 public:
