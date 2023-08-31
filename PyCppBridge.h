@@ -1,7 +1,6 @@
 #ifndef CPP_DOCKER_ISOLATION_PROVIDER_PYCPPBRIDGE_H
 #define CPP_DOCKER_ISOLATION_PROVIDER_PYCPPBRIDGE_H
 
-
 class DynamicValue {
 public:
     virtual void print() const = 0;

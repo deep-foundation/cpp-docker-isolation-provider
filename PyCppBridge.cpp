@@ -1,7 +1,6 @@
 #include "compiler.h"
 #include "PyCppBridge.h"
 
-
 bool PyPhpBridge::isAssociativeArray(const DynamicValue &cppArray) {
     return false;
 }

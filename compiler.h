@@ -8,10 +8,13 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <variant>
 #include <map>
 #include "nlohmann/json.hpp"
 #include "PyCppBridge.h"
 #include "DeepClientCppWrapper.h"
+
+using ArrayValue = std::variant<std::string, int>;
 
 class Compiler {
 public:
