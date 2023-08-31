@@ -2,14 +2,32 @@
 #define CPP_DOCKER_ISOLATION_PROVIDER_PYCPPBRIDGE_H
 
 
-class PyCppBridge {
+class DynamicValue {
 public:
-    static bool isAssociativeArray(const Php::Value& phpArray);
-    static Php::Value convertPyDictToPhpArray(PyObject* pyDict);
-    static Php::Value convertPyListToPhpArray(PyObject* pyList);
-    static PyObject* convertPhpArrayToPyDict(const Php::Value& phpArray);
-    static PyObject* convertPhpArrayToPyList(const Php::Value& phpArray);
-    static PyObject* convertPhpValueToPyObject(const Php::Value& phpValue);
+    virtual void print() const = 0;
+    virtual ~DynamicValue() {}
+};
+
+class StringValue : public DynamicValue {
+private:
+    std::string value;
+
+public:
+    StringValue(const std::string& val) : value(val) {}
+
+    void print() const override {
+        std::cout << "String value: " << value << std::endl;
+    }
+};
+
+class PyPhpBridge {
+public:
+    static bool isAssociativeArray(const DynamicValue& cppArray);
+    static DynamicValue convertPyDictToCppArray(PyObject* pyDict);
+    static DynamicValue convertPyListToCppArray(PyObject* pyList);
+    static PyObject* convertCppArrayToPyDict(const DynamicValue& cppArray);
+    static PyObject* convertCppArrayToPyList(const DynamicValue& cppArray);
+    static PyObject* convertCppValueToPyObject(const DynamicValue& cppValue);
     static std::string getPythonErrorText();
 };
 

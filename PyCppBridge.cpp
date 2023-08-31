@@ -1,12 +1,31 @@
 #include "compiler.h"
+#include "PyCppBridge.h"
 
-class PyPhpBridge {
-public:
-    static bool isAssociativeArray(const Php::Value& phpArray);
-    static Php::Value convertPyDictToPhpArray(PyObject* pyDict);
-    static Php::Value convertPyListToPhpArray(PyObject* pyList);
-    static PyObject* convertPhpArrayToPyDict(const Php::Value& phpArray);
-    static PyObject* convertPhpArrayToPyList(const Php::Value& phpArray);
-    static PyObject* convertPhpValueToPyObject(const Php::Value& phpValue);
-    static std::string getPythonErrorText();
-};
+
+bool PyPhpBridge::isAssociativeArray(const DynamicValue &cppArray) {
+    return false;
+}
+
+DynamicValue PyPhpBridge::convertPyDictToCppArray(PyObject *pyDict) {
+    return DynamicValue();
+}
+
+DynamicValue PyPhpBridge::convertPyListToCppArray(PyObject *pyList) {
+    return DynamicValue();
+}
+
+PyObject *PyPhpBridge::convertCppArrayToPyDict(const DynamicValue &cppArray) {
+    return nullptr;
+}
+
+PyObject *PyPhpBridge::convertCppArrayToPyList(const DynamicValue &cppArray) {
+    return nullptr;
+}
+
+PyObject *PyPhpBridge::convertCppValueToPyObject(const DynamicValue &cppValue) {
+    return nullptr;
+}
+
+std::string PyPhpBridge::getPythonErrorText() {
+    return std::string();
+}
