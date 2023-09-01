@@ -47,7 +47,7 @@ public:
 
 class AssociativeArray : public DynamicValue {
 private:
-    std::map<std::string, DynamicValue> value;
+    std::map<std::string, std::shared_ptr<DynamicValue>> value;
 
 public:
     void print() const override {
@@ -60,7 +60,7 @@ public:
 
 class IndexedArray : public DynamicValue {
 private:
-    std::vector<DynamicValue> value;
+    std::vector<std::shared_ptr<DynamicValue>> value;
 
 public:
     void print() const override {
