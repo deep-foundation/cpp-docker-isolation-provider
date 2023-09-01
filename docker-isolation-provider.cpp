@@ -48,6 +48,12 @@ int main(void) {
         res.set_content("{}", "application/json");
     });
 
+    svr.Post("/stop-server", [&](const httplib::Request &, httplib::Response &res) {
+        std::cout << "Received request to stop the server." << std::endl;
+        serverRunning = false;
+        res.set_content("Server is stopping...", "text/plain");
+    });
+
     while (serverRunning) {
         if (port) {
             std::cout << "PORT environment variable value: " << port << std::endl;
