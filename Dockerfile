@@ -1,5 +1,7 @@
 FROM python:3.10
 
+RUN apt-get update && apt-get install -y python3-dev
+
 RUN pip3 install aiohttp==3.8.4 \
                  aiosignal==1.3.1 \
                  async-timeout==4.0.2 \
@@ -13,8 +15,6 @@ RUN pip3 install aiohttp==3.8.4 \
                  websockets==10.4 \
                  deepclient==1.0.1 \
                  yarl==1.9.2
-
-RUN apt-get update && apt-get install -y python3-dev
 
 WORKDIR /app
 

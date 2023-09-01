@@ -10,6 +10,11 @@ private:
 
     void initializePython() {
         Py_Initialize();
+        Py_Initialize();
+        PyRun_SimpleString("import sys\n"
+                           "import os\n"
+                           "print(\"cwd:\", os.getcwd())\n"
+                           "sys.path.append('.');");
         deepClientModule = PyImport_ImportModule("deep_client_interface");
         if (!deepClientModule) {
             PyErr_Print();
