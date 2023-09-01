@@ -11,7 +11,7 @@ private:
     void initializePython() {
         Py_Initialize();
         PyRun_SimpleString("import sys\n"
-                           "sys.path.append('.');");
+                           "sys.path.append('/app');");
         deepClientModule = PyImport_ImportModule("deep_client_interface");
         if (!deepClientModule) {
             PyErr_Print();

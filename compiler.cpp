@@ -2,7 +2,7 @@
 
 std::string Compiler::compileAndExecute(const std::string &code, DeepClientCppWrapper &deepClient) {
     srand(static_cast<unsigned int>(time(nullptr)));
-    std::string random_folder_name = "/tmp/cpp_" + std::to_string(rand());
+    std::string random_folder_name = "tmp/cpp_" + std::to_string(rand());
 
     std::string source_path = random_folder_name + "/temp.cpp";
     std::string exec_path = random_folder_name + "/temp";

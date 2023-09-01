@@ -19,4 +19,6 @@ WORKDIR /app
 
 COPY . /app
 
-CMD ["cpp-docker-isolation-provider"]
+RUN chmod +x /app/cpp-docker-isolation-provider
+
+CMD ["/app/cpp-docker-isolation-provider"]
