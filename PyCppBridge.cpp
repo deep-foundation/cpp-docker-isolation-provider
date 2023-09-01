@@ -60,11 +60,49 @@ DynamicValue PyCppBridge::convertPyListToCppArray(PyObject *pyList) {
 }
 
 PyObject *PyCppBridge::convertCppArrayToPyDict(const DynamicValue &cppArray) {
-    return nullptr;
+    if (isAssociativeArray(cppArray)) {
+        const auto& associativeArray = dynamic_cast<const AssociativeArray&>(*cppArray);
+        PyObject* pyDict = PyDict_New();
+
+        for (const auto& pair : associativeArray.value) {
+            PyObject* pyKey = PyUnicode_DecodeFSDefault(pair.first.c_str());
+            PyObject* pyValue = convertCppArrayToPyObject(pair.second);
+
+            PyDict_SetItem(pyDict, pyKey, pyValue);
+
+            Py_XDECREF(pyKey);
+            Py_XDECREF(pyValue);
+        }
+
+        return pyDict;
+    } else {
+        // Handle the case where cppArray is not an associative array.
+        // You can throw an exception or return an appropriate value.
+        // Here, I'm returning None as a placeholder.
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
 }
 
 PyObject *PyCppBridge::convertCppArrayToPyList(const DynamicValue &cppArray) {
-    return nullptr;
+    if (isAssociativeArray(cppArray)) {
+        // Handle the case where cppArray is an associative array,
+        // which cannot be directly converted to a list.
+        // You can throw an exception or return an appropriate value.
+        // Here, I'm returning None as a placeholder.
+        Py_INCREF(Py_None);
+        return Py_None;
+    } else {
+        const auto& indexedArray = dynamic_cast<const IndexedArray&>(*cppArray);
+        PyObject* pyList = PyList_New(indexedArray.value.size());
+
+        for (size_t i = 0; i < indexedArray.value.size(); ++i) {
+            PyObject* pyValue = convertCppArrayToPyObject(indexedArray.value[i]);
+            PyList_SET_ITEM(pyList, i, pyValue);
+        }
+
+        return pyList;
+    }
 }
 
 PyObject *PyCppBridge::convertCppValueToPyObject(const DynamicValue &cppValue) {
