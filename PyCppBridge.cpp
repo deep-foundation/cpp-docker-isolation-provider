@@ -1,7 +1,8 @@
 #include "compiler.h"
 
-bool PyCppBridge::isAssociativeArray(const DynamicValue &cppArray) {
-    return false;
+bool PyCppBridge::isAssociativeArray(const std::shared_ptr<DynamicValue> &cppArray) {
+    auto associativeArray = std::dynamic_pointer_cast<AssociativeArray>(cppArray);
+    return associativeArray != nullptr;
 }
 
 std::shared_ptr<AssociativeArray> PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
@@ -134,4 +135,12 @@ std::string PyCppBridge::getPythonErrorText() {
 
     PyErr_Restore(exc_type, exc_value, exc_traceback);
     return "Unknown runtime error";
+}
+
+PyObject *PyCppBridge::convertCppArrayToPyObject(std::shared_ptr<DynamicValue> sharedPtr) {
+    if PyCppBridge::isAssociativeArray(sharedPtr) {
+        return PyCppBridge::convertCppArrayToPyDict(sharedPtr);
+    } else {
+        return PyCppBridge::convertCppArrayToPyDict(sharedPtr);
+    }
 }
