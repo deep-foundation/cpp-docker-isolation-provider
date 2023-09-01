@@ -1,30 +1,30 @@
 #include "compiler.h"
 #include "PyCppBridge.h"
 
-bool PyPhpBridge::isAssociativeArray(const DynamicValue &cppArray) {
+bool PyCppBridge::isAssociativeArray(const DynamicValue &cppArray) {
     return false;
 }
 
-DynamicValue PyPhpBridge::convertPyDictToCppArray(PyObject *pyDict) {
+DynamicValue PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
     return DynamicValue();
 }
 
-DynamicValue PyPhpBridge::convertPyListToCppArray(PyObject *pyList) {
+DynamicValue PyCppBridge::convertPyListToCppArray(PyObject *pyList) {
     return DynamicValue();
 }
 
-PyObject *PyPhpBridge::convertCppArrayToPyDict(const DynamicValue &cppArray) {
+PyObject *PyCppBridge::convertCppArrayToPyDict(const DynamicValue &cppArray) {
     return nullptr;
 }
 
-PyObject *PyPhpBridge::convertCppArrayToPyList(const DynamicValue &cppArray) {
+PyObject *PyCppBridge::convertCppArrayToPyList(const DynamicValue &cppArray) {
     return nullptr;
 }
 
-PyObject *PyPhpBridge::convertCppValueToPyObject(const DynamicValue &cppValue) {
+PyObject *PyCppBridge::convertCppValueToPyObject(const DynamicValue &cppValue) {
     return nullptr;
 }
 
-std::string PyPhpBridge::getPythonErrorText() {
+std::string PyCppBridge::getPythonErrorText() {
     return std::string();
 }

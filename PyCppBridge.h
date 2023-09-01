@@ -1,14 +1,15 @@
 #ifndef CPP_DOCKER_ISOLATION_PROVIDER_PYCPPBRIDGE_H
 #define CPP_DOCKER_ISOLATION_PROVIDER_PYCPPBRIDGE_H
 
+#include "nlohmann/json.hpp"
+#include <iostream>
+#include <variant>
 #include <string>
+#include <vector>
 #include <Python.h>
 #include "httplib.h"
 #include <ctime>
 #include <cstdlib>
-#include <iostream>
-#include <vector>
-#include <variant>
 #include <map>
 
 
@@ -20,10 +21,10 @@ public:
 
 class StringValue : public DynamicValue {
 private:
-    std::variant<std::string, int> value;
+    std::string value;
 
 public:
-    StringValue(const std::variant<std::string, int>& val) : value(val) {}
+    StringValue(const std::string& val) : value(val) {}
 
     void print() const override {
         std::cout << "String value: " << value << std::endl;
@@ -32,18 +33,20 @@ public:
 
 class ArrayValue : public DynamicValue {
 private:
-    std::string value;
+    std::variant<std::string, int> value;
 
 public:
     ArrayValue(const std::variant<std::string, int>& val) : value(val) {}
 
     void print() const override {
-        std::cout << "Array value: " << value << std::endl;
+        std::cout << "Array value: ";
+        std::visit([](const auto& v) { std::cout << v; }, value);
+        std::cout << std::endl;
     }
 };
 
 
-class PyPhpBridge {
+class PyCppBridge {
 public:
     static bool isAssociativeArray(const DynamicValue& cppArray);
     static DynamicValue convertPyDictToCppArray(PyObject* pyDict);

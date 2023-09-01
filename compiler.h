@@ -1,7 +1,6 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#include "nlohmann/json.hpp"
 #include "PyCppBridge.h"
 #include "DeepClientCppWrapper.h"
 
