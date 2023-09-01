@@ -89,35 +89,6 @@ PyObject *PyCppBridge::convertCppArrayToPyList(const std::shared_ptr<IndexedArra
     return pyList;
 }
 
-PyObject *PyCppBridge::convertCppValueToPyObject(const DynamicValue &cppValue) {
-    if (isAssociativeArray(cppValue)) {
-        const auto& associativeArray = dynamic_cast<const AssociativeArray&>(*cppValue);
-        PyObject* pyDict = PyDict_New();
-
-        for (const auto& pair : associativeArray.value) {
-            PyObject* pyKey = PyUnicode_DecodeFSDefault(pair.first.c_str());
-            PyObject* pyValue = convertCppArrayToPyObject(pair.second);
-
-            PyDict_SetItem(pyDict, pyKey, pyValue);
-
-            Py_XDECREF(pyKey);
-            Py_XDECREF(pyValue);
-        }
-
-        return pyDict;
-    } else {
-        const auto& indexedArray = dynamic_cast<const IndexedArray&>(*cppValue);
-        PyObject* pyList = PyList_New(indexedArray.value.size());
-
-        for (size_t i = 0; i < indexedArray.value.size(); ++i) {
-            PyObject* pyValue = convertCppArrayToPyObject(indexedArray.value[i]);
-            PyList_SET_ITEM(pyList, i, pyValue);
-        }
-
-        return pyList;
-    }
-}
-
 std::string PyCppBridge::getPythonErrorText() {
     PyObject *exc_type, *exc_value, *exc_traceback;
     PyErr_Fetch(&exc_type, &exc_value, &exc_traceback);
@@ -138,9 +109,11 @@ std::string PyCppBridge::getPythonErrorText() {
 }
 
 PyObject *PyCppBridge::convertCppArrayToPyObject(std::shared_ptr<DynamicValue> sharedPtr) {
-    if PyCppBridge::isAssociativeArray(sharedPtr) {
-        return PyCppBridge::convertCppArrayToPyDict(sharedPtr);
+    if (PyCppBridge::isAssociativeArray(sharedPtr)) {
+        auto associativeArray = std::dynamic_pointer_cast<AssociativeArray>(sharedPtr);
+        return PyCppBridge::convertCppArrayToPyDict(associativeArray);
     } else {
-        return PyCppBridge::convertCppArrayToPyDict(sharedPtr);
+        auto indexedArray = std::dynamic_pointer_cast<IndexedArray>(sharedPtr);
+        return PyCppBridge::convertCppArrayToPyList(indexedArray);
     }
 }
