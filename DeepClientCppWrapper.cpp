@@ -10,8 +10,6 @@ private:
 
     void initializePython() {
         Py_Initialize();
-        PyRun_SimpleString("import sys\n"
-                           "sys.path.append('/app');");
         deepClientModule = PyImport_ImportModule("deep_client_interface");
         if (!deepClientModule) {
             PyErr_Print();
@@ -99,7 +97,7 @@ public:
             }
             Py_XDECREF(pyFunc);
         } else {
-            throw std::runtime_error("Failed to import required Python modules");
+            throw std::runtime_error("Failed to import required Python modules in call_python_function");
         }
         return result;
     }

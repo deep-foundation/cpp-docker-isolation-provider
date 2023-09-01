@@ -14,10 +14,13 @@ RUN pip3 install aiohttp==3.8.4 \
                  deepclient==1.0.1 \
                  yarl==1.9.2
 
+RUN apt-get update && apt-get install -y python3-dev
 
 WORKDIR /app
 
 COPY . /app
+
+COPY ./deep_client_interface /usr/local/lib/python3.10/deep_client_interface
 
 RUN chmod +x /app/cpp-docker-isolation-provider
 
