@@ -1,11 +1,11 @@
 #include "compiler.h"
 
 
-class [[maybe_unused]] DeepClientCppWrapper {
+class DeepClientCppWrapper {
 
 private:
-    std::string token = "";
-    std::string url = "";
+    std::string token;
+    std::string url;
     PyObject* deepClientModule = nullptr;
 
     void initializePython() {
@@ -33,9 +33,10 @@ public:
         finalizePython();
     }
 
-    void __construct(std::string basicToken, std::string basicUrl) {
-        token = basicToken;
-        url = basicUrl;
+    DeepClientCppWrapper(const std::string& jwt, const std::string& gql_urn_str) {
+        initializePython();
+        token = jwt;
+        url = gql_urn_str;
     }
 
     std::shared_ptr<DynamicValue> select(std::shared_ptr<DynamicValue> query) {
