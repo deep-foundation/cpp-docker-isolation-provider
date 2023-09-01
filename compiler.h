@@ -2,7 +2,6 @@
 #define COMPILER_H
 
 #include "PyCppBridge.h"
-#include "DeepClientCppWrapper.h"
 
 class Compiler {
 public:

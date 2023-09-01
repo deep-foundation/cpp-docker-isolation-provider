@@ -22,6 +22,7 @@ add_executable(cpp-docker-isolation-provider
         compiler.h
         httplib.h
         PyCppBridge.cpp
+        DeepClientCppWrapper.cpp
         compiler.cpp
         docker-isolation-provider.cpp
 )
