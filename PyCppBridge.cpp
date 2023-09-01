@@ -5,7 +5,7 @@ bool PyCppBridge::isAssociativeArray(const DynamicValue &cppArray) {
 }
 
 DynamicValue PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
-    DynamicValue cppArray;
+    auto cppArray = std::make_shared<AssociativeArray>();
 
     PyObject* pyKey;
     PyObject* pyValue;
@@ -15,17 +15,18 @@ DynamicValue PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
         std::string key(PyUnicode_AsUTF8(pyKey));
 
         if (PyLong_Check(pyValue)) {
-            cppArray[key] = PyLong_AsLong(pyValue);
+            cppArray->value[key] = std::make_shared<IntValue>(PyLong_AsLong(pyValue));
         } else if (PyFloat_Check(pyValue)) {
-            cppArray[key] = PyFloat_AsDouble(pyValue);
+            cppArray->value[key] = std::make_shared<FloatValue>(PyFloat_AsDouble(pyValue));
         } else if (PyUnicode_Check(pyValue)) {
-            cppArray[key] = std::string(PyUnicode_AsUTF8(pyValue));
+            cppArray->value[key] = std::make_shared<StringValue>(PyUnicode_AsUTF8(pyValue));
         } else if (PyDict_Check(pyValue)) {
-            cppArray[key] = convertPyDictToCppArray(pyValue);
+            cppArray->value[key] = convertPyDictToCppArray(pyValue);
         } else if (PyList_Check(pyValue)) {
-            cppArray[key] = convertPyListToCppArray(pyValue);
+            cppArray->value[key] = convertPyListToCppArray(pyValue);
         } else {
-            cppArray[key] = nullptr; // Handle unsupported types as nullptr or customize as needed.
+            // Handle unsupported types as needed.
+            cppArray->value[key] = nullptr;
         }
     }
 
@@ -33,24 +34,25 @@ DynamicValue PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
 }
 
 DynamicValue PyCppBridge::convertPyListToCppArray(PyObject *pyList) {
-    DynamicValue cppArray;
+    auto cppArray = std::make_shared<IndexedArray>();
 
     Py_ssize_t size = PyList_Size(pyList);
     for (Py_ssize_t i = 0; i < size; ++i) {
         PyObject* pyValue = PyList_GetItem(pyList, i);
 
         if (PyLong_Check(pyValue)) {
-            cppArray[i] = PyLong_AsLong(pyValue);
+            cppArray->value.push_back(std::make_shared<IntValue>(PyLong_AsLong(pyValue)));
         } else if (PyFloat_Check(pyValue)) {
-            cppArray[i] = PyFloat_AsDouble(pyValue);
+            cppArray->value.push_back(std::make_shared<FloatValue>(PyFloat_AsDouble(pyValue)));
         } else if (PyUnicode_Check(pyValue)) {
-            cppArray[i] = std::string(PyUnicode_AsUTF8(pyValue));
+            cppArray->value.push_back(std::make_shared<StringValue>(PyUnicode_AsUTF8(pyValue)));
         } else if (PyList_Check(pyValue)) {
-            cppArray[i] = convertPyListToCppArray(pyValue);
+            cppArray->value.push_back(convertPyListToCppArray(pyValue));
         } else if (PyDict_Check(pyValue)) {
-            cppArray[i] = convertPyDictToCppArray(pyValue);
+            cppArray->value.push_back(convertPyDictToCppArray(pyValue));
         } else {
-            cppArray[i] = nullptr; // Handle unsupported types as nullptr or customize as needed.
+            // Handle unsupported types as needed.
+            cppArray->value.push_back(nullptr);
         }
     }
 
@@ -66,7 +68,32 @@ PyObject *PyCppBridge::convertCppArrayToPyList(const DynamicValue &cppArray) {
 }
 
 PyObject *PyCppBridge::convertCppValueToPyObject(const DynamicValue &cppValue) {
-    return nullptr;
+    if (isAssociativeArray(cppValue)) {
+        const auto& associativeArray = dynamic_cast<const AssociativeArray&>(*cppValue);
+        PyObject* pyDict = PyDict_New();
+
+        for (const auto& pair : associativeArray.value) {
+            PyObject* pyKey = PyUnicode_DecodeFSDefault(pair.first.c_str());
+            PyObject* pyValue = convertCppArrayToPyObject(pair.second);
+
+            PyDict_SetItem(pyDict, pyKey, pyValue);
+
+            Py_XDECREF(pyKey);
+            Py_XDECREF(pyValue);
+        }
+
+        return pyDict;
+    } else {
+        const auto& indexedArray = dynamic_cast<const IndexedArray&>(*cppValue);
+        PyObject* pyList = PyList_New(indexedArray.value.size());
+
+        for (size_t i = 0; i < indexedArray.value.size(); ++i) {
+            PyObject* pyValue = convertCppArrayToPyObject(indexedArray.value[i]);
+            PyList_SET_ITEM(pyList, i, pyValue);
+        }
+
+        return pyList;
+    }
 }
 
 std::string PyCppBridge::getPythonErrorText() {
