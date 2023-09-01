@@ -4,7 +4,7 @@ bool PyCppBridge::isAssociativeArray(const DynamicValue &cppArray) {
     return false;
 }
 
-DynamicValue PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
+std::shared_ptr<AssociativeArray> PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
     auto cppArray = std::make_shared<AssociativeArray>();
 
     PyObject* pyKey;
@@ -33,7 +33,7 @@ DynamicValue PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
     return cppArray;
 }
 
-DynamicValue PyCppBridge::convertPyListToCppArray(PyObject *pyList) {
+std::shared_ptr<IndexedArray> PyCppBridge::convertPyListToCppArray(PyObject *pyList) {
     auto cppArray = std::make_shared<IndexedArray>();
 
     Py_ssize_t size = PyList_Size(pyList);

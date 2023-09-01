@@ -97,8 +97,8 @@ public:
 class PyCppBridge {
 public:
     static bool isAssociativeArray(const DynamicValue& cppArray);
-    static DynamicValue convertPyDictToCppArray(PyObject* pyDict);
-    static DynamicValue convertPyListToCppArray(PyObject* pyList);
+    static std::shared_ptr<AssociativeArray> convertPyDictToCppArray(PyObject* pyDict);
+    static std::shared_ptr<IndexedArray> convertPyListToCppArray(PyObject* pyList);
     static PyObject* convertCppArrayToPyDict(const DynamicValue& cppArray);
     static PyObject* convertCppArrayToPyList(const DynamicValue& cppArray);
     static PyObject* convertCppValueToPyObject(const DynamicValue& cppValue);
