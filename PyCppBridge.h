@@ -20,10 +20,9 @@ public:
 };
 
 class StringValue : public DynamicValue {
-private:
+public:
     std::string value;
 
-public:
     StringValue(const std::string& val) : value(val) {}
 
     void print() const override {
@@ -32,10 +31,9 @@ public:
 };
 
 class ArrayValue : public DynamicValue {
-private:
+public:
     std::variant<std::string, int> value;
 
-public:
     ArrayValue(const std::variant<std::string, int>& val) : value(val) {}
 
     void print() const override {
@@ -46,10 +44,9 @@ public:
 };
 
 class AssociativeArray : public DynamicValue {
-private:
+public:
     std::map<std::string, std::shared_ptr<DynamicValue>> value;
 
-public:
     void print() const override {
         for (const auto& pair : value) {
             std::cout << "Key: " << pair.first << ", Value: ";
@@ -59,10 +56,9 @@ public:
 };
 
 class IndexedArray : public DynamicValue {
-private:
+public:
     std::vector<std::shared_ptr<DynamicValue>> value;
 
-public:
     void print() const override {
         for (const auto& item : value) {
             item->print();
@@ -71,10 +67,9 @@ public:
 };
 
 class IntValue : public DynamicValue {
-private:
+public:
     int value;
 
-public:
     IntValue(int val) : value(val) {}
 
     void print() const override {
@@ -83,10 +78,9 @@ public:
 };
 
 class FloatValue : public DynamicValue {
-private:
+public:
     double value;
 
-public:
     FloatValue(double val) : value(val) {}
 
     void print() const override {
