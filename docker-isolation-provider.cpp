@@ -1,15 +1,6 @@
 #include "compiler.h"
 #include "DeepClientCppWrapper.cpp"
 
-bool serverRunning = true;
-
-void signalHandler(int signal) {
-    if (signal == SIGINT) {
-        std::cout << "Received SIGINT, stopping server..." << std::endl;
-        serverRunning = false;
-    }
-}
-
 int main(void) {
     signal(SIGINT, signalHandler);
 
@@ -18,6 +9,12 @@ int main(void) {
     const char* port = std::getenv("PORT");
 
     Server svr;
+
+    svr.Post("/stop-server", [&](const httplib::Request &, httplib::Response &res) {
+        std::cout << "Received request to stop the server." << std::endl;
+        svr.stop();
+        res.set_content("Server is stopping...", "text/plain");
+    });
 
     svr.Get("/healthz", [](const httplib::Request &, httplib::Response &res) {
         res.set_content("{}", "application/json");
@@ -48,20 +45,12 @@ int main(void) {
         res.set_content("{}", "application/json");
     });
 
-    svr.Post("/stop-server", [&](const httplib::Request &, httplib::Response &res) {
-        std::cout << "Received request to stop the server." << std::endl;
-        serverRunning = false;
-        res.set_content("Server is stopping...", "text/plain");
-    });
-
-    while (serverRunning) {
-        if (port) {
-            std::cout << "PORT environment variable value: " << port << std::endl;
-            svr.listen("0.0.0.0", std::stoi(port));
-        } else {
-            std::cout << "PORT environment variable not set." << std::endl;
-            svr.listen("0.0.0.0", 29080);
-        }
+    if (port) {
+        std::cout << "PORT environment variable value: " << port << std::endl;
+        svr.listen("0.0.0.0", std::stoi(port));
+    } else {
+        std::cout << "PORT environment variable not set." << std::endl;
+        svr.listen("0.0.0.0", 29080);
     }
 
     std::cout << "Server has been stopped." << std::endl;
