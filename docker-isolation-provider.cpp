@@ -1,7 +1,18 @@
 #include "compiler.h"
 #include "DeepClientCppWrapper.cpp"
 
+bool serverRunning = true;
+
+void signalHandler(int signal) {
+    if (signal == SIGINT) {
+        std::cout << "Received SIGINT, stopping server..." << std::endl;
+        serverRunning = false;
+    }
+}
+
 int main(void) {
+    signal(SIGINT, signalHandler);
+
     using namespace httplib;
     using json = nlohmann::json;
     const char* port = std::getenv("PORT");
@@ -37,12 +48,16 @@ int main(void) {
         res.set_content("{}", "application/json");
     });
 
-    if (port) {
-        std::cout << "PORT environment variable value: " << port << std::endl;
-        svr.listen("0.0.0.0", std::stoi(port));
-    } else {
-        std::cout << "PORT environment variable not set." << std::endl;
-        svr.listen("0.0.0.0", 29080);
+    while (serverRunning) {
+        if (port) {
+            std::cout << "PORT environment variable value: " << port << std::endl;
+            svr.listen("0.0.0.0", std::stoi(port));
+        } else {
+            std::cout << "PORT environment variable not set." << std::endl;
+            svr.listen("0.0.0.0", 29080);
+        }
     }
+
+    std::cout << "Server has been stopped." << std::endl;
     return 0;
 }
