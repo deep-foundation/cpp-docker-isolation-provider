@@ -45,6 +45,54 @@ public:
     }
 };
 
+class AssociativeArray : public DynamicValue {
+private:
+    std::map<std::string, DynamicValue> value;
+
+public:
+    void print() const override {
+        for (const auto& pair : value) {
+            std::cout << "Key: " << pair.first << ", Value: ";
+            pair.second->print();
+        }
+    }
+};
+
+class IndexedArray : public DynamicValue {
+private:
+    std::vector<DynamicValue> value;
+
+public:
+    void print() const override {
+        for (const auto& item : value) {
+            item->print();
+        }
+    }
+};
+
+class IntValue : public DynamicValue {
+private:
+    int value;
+
+public:
+    IntValue(int val) : value(val) {}
+
+    void print() const override {
+        std::cout << "Int value: " << value << std::endl;
+    }
+};
+
+class FloatValue : public DynamicValue {
+private:
+    double value;
+
+public:
+    FloatValue(double val) : value(val) {}
+
+    void print() const override {
+        std::cout << "Float value: " << value << std::endl;
+    }
+};
 
 class PyCppBridge {
 public:

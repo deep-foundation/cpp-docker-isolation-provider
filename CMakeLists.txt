@@ -18,8 +18,10 @@ find_package(PythonLibs REQUIRED)
 
 add_executable(cpp-docker-isolation-provider
         nlohmann/json.hpp
-        httplib.h
+        PyCppBridge.h
         compiler.h
+        httplib.h
+        PyCppBridge.cpp
         compiler.cpp
         docker-isolation-provider.cpp
 )
