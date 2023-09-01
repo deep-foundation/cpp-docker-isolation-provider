@@ -4,6 +4,7 @@ int main(void) {
     using namespace httplib;
     using json = nlohmann::json;
     const char* port = std::getenv("PORT");
+    const char* port = std::getenv("PORT");
 
     Server svr;
 
