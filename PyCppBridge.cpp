@@ -59,50 +59,33 @@ std::shared_ptr<IndexedArray> PyCppBridge::convertPyListToCppArray(PyObject *pyL
     return cppArray;
 }
 
-PyObject *PyCppBridge::convertCppArrayToPyDict(const DynamicValue &cppArray) {
-    if (isAssociativeArray(cppArray)) {
-        const auto& associativeArray = dynamic_cast<const AssociativeArray&>(*cppArray);
-        PyObject* pyDict = PyDict_New();
+PyObject *PyCppBridge::convertCppArrayToPyDict(const std::shared_ptr<AssociativeArray> &cppArray) {
+    const auto& associativeArray = dynamic_cast<const AssociativeArray&>(*cppArray);
+    PyObject* pyDict = PyDict_New();
 
-        for (const auto& pair : associativeArray.value) {
-            PyObject* pyKey = PyUnicode_DecodeFSDefault(pair.first.c_str());
-            PyObject* pyValue = convertCppArrayToPyObject(pair.second);
+    for (const auto& pair : associativeArray.value) {
+        PyObject* pyKey = PyUnicode_DecodeFSDefault(pair.first.c_str());
+        PyObject* pyValue = PyCppBridge::convertCppArrayToPyObject(pair.second);
 
-            PyDict_SetItem(pyDict, pyKey, pyValue);
+        PyDict_SetItem(pyDict, pyKey, pyValue);
 
-            Py_XDECREF(pyKey);
-            Py_XDECREF(pyValue);
-        }
-
-        return pyDict;
-    } else {
-        // Handle the case where cppArray is not an associative array.
-        // You can throw an exception or return an appropriate value.
-        // Here, I'm returning None as a placeholder.
-        Py_INCREF(Py_None);
-        return Py_None;
+        Py_XDECREF(pyKey);
+        Py_XDECREF(pyValue);
     }
+
+    return pyDict;
 }
 
-PyObject *PyCppBridge::convertCppArrayToPyList(const DynamicValue &cppArray) {
-    if (isAssociativeArray(cppArray)) {
-        // Handle the case where cppArray is an associative array,
-        // which cannot be directly converted to a list.
-        // You can throw an exception or return an appropriate value.
-        // Here, I'm returning None as a placeholder.
-        Py_INCREF(Py_None);
-        return Py_None;
-    } else {
-        const auto& indexedArray = dynamic_cast<const IndexedArray&>(*cppArray);
-        PyObject* pyList = PyList_New(indexedArray.value.size());
+PyObject *PyCppBridge::convertCppArrayToPyList(const std::shared_ptr<IndexedArray> &cppArray) {
+    const auto& indexedArray = dynamic_cast<const IndexedArray&>(*cppArray);
+    PyObject* pyList = PyList_New(indexedArray.value.size());
 
-        for (size_t i = 0; i < indexedArray.value.size(); ++i) {
-            PyObject* pyValue = convertCppArrayToPyObject(indexedArray.value[i]);
-            PyList_SET_ITEM(pyList, i, pyValue);
-        }
-
-        return pyList;
+    for (size_t i = 0; i < indexedArray.value.size(); ++i) {
+        PyObject* pyValue = PyCppBridge::convertCppArrayToPyObject(indexedArray.value[i]);
+        PyList_SET_ITEM(pyList, i, pyValue);
     }
+
+    return pyList;
 }
 
 PyObject *PyCppBridge::convertCppValueToPyObject(const DynamicValue &cppValue) {
