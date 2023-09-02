@@ -103,7 +103,7 @@ std::string PyCppBridge::getPythonErrorText() {
     return "Unknown runtime error";
 }
 
-PyObject *PyCppBridge::convertCppArrayToPyObject(std::shared_ptr<DynamicValue> &sharedPtr) {
+PyObject *PyCppBridge::convertCppArrayToPyObject(const std::shared_ptr<DynamicValue> &sharedPtr) {
     if (std::shared_ptr<AssociativeArray> associativeArray = std::dynamic_pointer_cast<AssociativeArray>(sharedPtr)) {
         return PyCppBridge::convertCppArrayToPyDict(associativeArray);
     } else if (std::shared_ptr<IndexedArray> indexedArray = std::dynamic_pointer_cast<IndexedArray>(sharedPtr)) {

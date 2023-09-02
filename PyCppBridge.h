@@ -147,7 +147,7 @@ public:
     static PyObject* convertCppArrayToPyList(const std::shared_ptr<IndexedArray>& cppArray);
     static std::string getPythonErrorText();
 
-    static PyObject *convertCppArrayToPyObject(std::shared_ptr<DynamicValue>& sharedPtr);
+    static PyObject *convertCppArrayToPyObject(const std::shared_ptr<DynamicValue>& sharedPtr);
 };
 
 
