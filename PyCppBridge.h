@@ -12,10 +12,12 @@
 #include <cstdlib>
 #include <map>
 
+using json = nlohmann::json;
 
 class DynamicValue {
 public:
     virtual void print() const = 0;
+    virtual json toJson() const;
     virtual ~DynamicValue() {}
 };
 
@@ -53,6 +55,14 @@ public:
             pair.second->print();
         }
     }
+
+    json toJson() const {
+        json json_obj;
+        for (const auto& pair : value) {
+            json_obj[pair.first] = pair.second->toJson();
+        }
+        return json_obj;
+    }
 };
 
 class IndexedArray : public DynamicValue {
@@ -63,6 +73,14 @@ public:
         for (const auto& item : value) {
             item->print();
         }
+    }
+
+    json toJson() const {
+        json json_obj;
+        for (size_t i = 0; i < value.size(); i++) {
+            json_obj[i] = value[i]->toJson();
+        }
+        return json_obj;
     }
 };
 
