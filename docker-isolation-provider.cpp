@@ -18,10 +18,9 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
         json json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
         auto deepClient = new DeepClientCppWrapper(json_obj["params"]["jwt"].get<std::string>(), gql_urn_str);
-        std::string result = "test";
+        std::string result = deepClient->select(std::make_shared<IntValue>(1));
         delete deepClient;
         res.set_content(result, "application/json");
-        Py_Finalize();
     } catch (const std::exception& e) {
         res.set_content("Invalid JSON format: " + std::string(e.what()), "application/json");
     }
