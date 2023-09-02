@@ -81,7 +81,8 @@ public:
                     if (PyUnicode_Check(pyResult)) {
                         const char* str_value = PyUnicode_AsUTF8(pyResult);
                         auto stringValue = std::make_shared<StringValue>(str_value);
-                        return stringValue;
+                        throw std::runtime_error(str_value);
+                        //return stringValue;
                     } else if (PyList_Check(pyResult)) {
                         return PyCppBridge::convertPyListToCppArray(pyResult);
                     } else if (PyDict_Check(pyResult)) {

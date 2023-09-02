@@ -2,6 +2,7 @@ from typing import Any, Optional, Union, Dict, List
 from deepclient import DeepClient, DeepClientOptions
 from gql import Client
 from gql.transport.aiohttp import AIOHTTPTransport
+from aiohttp.client_exceptions import ClientConnectorError
 import asyncio
 
 global_deep_client = None
@@ -25,32 +26,52 @@ def make_deep_client(token, url):
     return global_deep_client
 
 
-def select(token, url, exp: Union[Dict, int, List[int]], options: Dict = {}) -> Dict:
-    result = asyncio.run(make_deep_client(token, url).select(exp, options))
-    return result
+def select(token, url, exp: Union[Dict, int, List[int]], options: Dict = {}) -> dict | str:
+    try:
+        result = asyncio.run(make_deep_client(token, url).select(exp, options))
+        return result
+    except ClientConnectorError as e:
+        return "Cannot connect to host"
 
 
-def insert(token, url, objects, options: Dict = {}) -> Dict:
-    result = asyncio.run(make_deep_client(token, url).insert(objects, options))
-    return result
+def insert(token, url, objects, options: Dict = {}) -> dict | str:
+    try:
+        result = asyncio.run(make_deep_client(token, url).insert(objects, options))
+        return result
+    except ClientConnectorError as e:
+        return "Cannot connect to host"
 
 
-async def update(token, url, exp: Dict, value: Dict, options: Dict = {}) -> Dict:
-    result = asyncio.run(make_deep_client(token, url).update(exp, value, options))
-    return result
+async def update(token, url, exp: Dict, value: Dict, options: Dict = {}) -> dict | str:
+    try:
+        result = asyncio.run(make_deep_client(token, url).update(exp, value, options))
+        return result
+    except ClientConnectorError as e:
+        return "Cannot connect to host"
 
 
-async def delete(token, url, exp: Union[Dict, int, List[int]], options: Dict = {}) -> Dict:
-    result = asyncio.run(make_deep_client(token, url).delete(exp, options))
-    return result
+async def delete(token, url, exp: Union[Dict, int, List[int]], options: Dict = {}) -> dict | str:
+    try:
+        result = asyncio.run(make_deep_client(token, url).delete(exp, options))
+        return result
+    except ClientConnectorError as e:
+        return "Cannot connect to host"
 
 
-async def serial(token, url, AsyncSerialParams: Dict):
-    return await make_deep_client(token, url).serial(AsyncSerialParams)
+def serial(token, url, AsyncSerialParams: Dict):
+    try:
+        result = asyncio.run(make_deep_client(token, url).serial(AsyncSerialParams))
+        return result
+    except ClientConnectorError as e:
+        return 'Cannot connect to host'
 
 
-async def id(token, url, start: Any, *path: Any) -> int:
-    return await make_deep_client(token, url).id(start, path)
+async def id(token, url, start: Any, *path: Any) -> int | str:
+    try:
+        result = asyncio.run(make_deep_client(token, url).id(start, path))
+        return result
+    except ClientConnectorError as e:
+        return 'Cannot connect to host'
 
 
 async def reserve(token, url):
