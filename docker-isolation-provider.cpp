@@ -4,6 +4,9 @@
 using namespace httplib;
 using json = nlohmann::json;
 
+static DeepClientCppWrapper* deepClient = nullptr;
+static int objectCreated = 0;
+
 void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     const auto& json_data = req.body;
     const char* gql_urn = std::getenv("GQL_URN");
@@ -17,10 +20,14 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
         delete deepClient;*/
         json json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
-        auto deepClient = new DeepClientCppWrapper(json_obj["params"]["jwt"].get<std::string>(), gql_urn_str);
-        //std::string result = deepClient->select(std::make_shared<IntValue>(1));
         std::string result = "test";
-        delete deepClient;
+        if (objectCreated) {
+            result = "objectCreated";
+        } else {
+            deepClient = new DeepClientCppWrapper(json_obj["params"]["jwt"].get<std::string>(), gql_urn_str);
+            objectCreated = 1;
+        }
+        //std::string result = deepClient->select(std::make_shared<IntValue>(1));
         res.set_content(result, "application/json");
     } catch (const std::exception& e) {
         res.set_content("Invalid JSON format: " + std::string(e.what()), "application/json");
