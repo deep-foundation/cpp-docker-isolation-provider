@@ -1,10 +1,5 @@
 #include "compiler.h"
 
-bool PyCppBridge::isAssociativeArray(const std::shared_ptr<DynamicValue> &cppArray) {
-    auto associativeArray = std::dynamic_pointer_cast<AssociativeArray>(cppArray);
-    return associativeArray != nullptr;
-}
-
 std::shared_ptr<AssociativeArray> PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
     auto cppArray = std::make_shared<AssociativeArray>();
 
@@ -108,12 +103,27 @@ std::string PyCppBridge::getPythonErrorText() {
     return "Unknown runtime error";
 }
 
-PyObject *PyCppBridge::convertCppArrayToPyObject(std::shared_ptr<DynamicValue> sharedPtr) {
-    if (PyCppBridge::isAssociativeArray(sharedPtr)) {
-        auto associativeArray = std::dynamic_pointer_cast<AssociativeArray>(sharedPtr);
+PyObject *PyCppBridge::convertCppArrayToPyObject(std::shared_ptr<DynamicValue> &sharedPtr) {
+    if (std::shared_ptr<AssociativeArray> associativeArray = std::dynamic_pointer_cast<AssociativeArray>(sharedPtr)) {
         return PyCppBridge::convertCppArrayToPyDict(associativeArray);
-    } else {
-        auto indexedArray = std::dynamic_pointer_cast<IndexedArray>(sharedPtr);
+    } else if (std::shared_ptr<IndexedArray> indexedArray = std::dynamic_pointer_cast<IndexedArray>(sharedPtr)) {
         return PyCppBridge::convertCppArrayToPyList(indexedArray);
+    } else if (std::shared_ptr<StringValue> stringValue = std::dynamic_pointer_cast<StringValue>(sharedPtr)) {
+        std::cout << "This is a StringValue with value: " << stringValue->value << std::endl;
+        return PyUnicode_DecodeUTF8(stringValue->value.c_str(), stringValue->value.size(), nullptr);
+    } else if (std::shared_ptr<ArrayValue> arrayValue = std::dynamic_pointer_cast<ArrayValue>(sharedPtr)) {
+        std::cout << "This is an ArrayValue" << std::endl;
+        Py_INCREF(Py_None);
+        return Py_None;
+    } else if (std::shared_ptr<IntValue> intValue = std::dynamic_pointer_cast<IntValue>(sharedPtr)) {
+        std::cout << "This is an IntValue with value: " << intValue->value << std::endl;
+        return PyLong_FromLong(intValue->value);
+    } else if (std::shared_ptr<FloatValue> floatValue = std::dynamic_pointer_cast<FloatValue>(sharedPtr)) {
+        std::cout << "This is a FloatValue with value: " << floatValue->value << std::endl;
+        return PyFloat_FromDouble(floatValue->value);
+    } else {
+        std::cout << "Unknown type" << std::endl;
+        Py_INCREF(Py_None);
+        return Py_None;
     }
 }
