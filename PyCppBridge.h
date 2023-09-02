@@ -17,7 +17,7 @@ using json = nlohmann::json;
 class DynamicValue {
 public:
     virtual void print() const = 0;
-    virtual json toJson() const;
+    virtual json toJson() const = 0;
     virtual ~DynamicValue() {}
 };
 
@@ -29,6 +29,13 @@ public:
 
     void print() const override {
         std::cout << "String value: " << value << std::endl;
+    }
+
+    json toJson() const override {
+        return json{
+                {"type", "string"},
+                {"value", value}
+        };
     }
 };
 
@@ -42,6 +49,18 @@ public:
         std::cout << "Array value: ";
         std::visit([](const auto& v) { std::cout << v; }, value);
         std::cout << std::endl;
+    }
+
+    json toJson() const override {
+        json result;
+        if (std::holds_alternative<std::string>(value)) {
+            result["type"] = "string";
+            result["value"] = std::get<std::string>(value);
+        } else if (std::holds_alternative<int>(value)) {
+            result["type"] = "int";
+            result["value"] = std::get<int>(value);
+        }
+        return result;
     }
 };
 
@@ -93,6 +112,13 @@ public:
     void print() const override {
         std::cout << "Int value: " << value << std::endl;
     }
+
+    json toJson() const override {
+        return json{
+                {"type", "int"},
+                {"value", value}
+        };
+    }
 };
 
 class FloatValue : public DynamicValue {
@@ -103,6 +129,13 @@ public:
 
     void print() const override {
         std::cout << "Float value: " << value << std::endl;
+    }
+
+    json toJson() const override {
+        return json{
+                {"type", "float"},
+                {"value", value}
+        };
     }
 };
 
