@@ -29,6 +29,7 @@ def make_deep_client(token, url):
 def select(token, url, exp: Union[Dict, int, List[int]], options: Dict = {}) -> dict | str:
     try:
         result = asyncio.run(make_deep_client(token, url).select(exp, options))
+        print(result)
         return result
     except ClientConnectorError as e:
         return "Cannot connect to host"

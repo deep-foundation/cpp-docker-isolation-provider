@@ -10,6 +10,8 @@ std::shared_ptr<AssociativeArray> PyCppBridge::convertPyDictToCppArray(PyObject 
     while (PyDict_Next(pyDict, &pos, &pyKey, &pyValue)) {
         std::string key(PyUnicode_AsUTF8(pyKey));
 
+        std::cout << "This is a key: " << key << std::endl;
+
         if (PyLong_Check(pyValue)) {
             cppArray->value[key] = std::make_shared<IntValue>(PyLong_AsLong(pyValue));
         } else if (PyFloat_Check(pyValue)) {

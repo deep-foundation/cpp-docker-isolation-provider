@@ -84,8 +84,10 @@ public:
                         throw std::runtime_error(str_value);
                         //return stringValue;
                     } else if (PyList_Check(pyResult)) {
+                        std::cout << "This is an IndexedArray" << std::endl;
                         return PyCppBridge::convertPyListToCppArray(pyResult);
                     } else if (PyDict_Check(pyResult)) {
+                        std::cout << "This is an AssociativeArray" << std::endl;
                         return PyCppBridge::convertPyDictToCppArray(pyResult);
                     } else {
                         std::string errorText = PyCppBridge::getPythonErrorText();
