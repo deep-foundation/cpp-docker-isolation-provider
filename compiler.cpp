@@ -36,7 +36,7 @@ std::string Compiler::compileAndExecute(const std::string &code, DeepClientCppWr
         return "Compilation failed:\n" + compile_output;
     }
 
-    std::string execute_command = exec_path;
+    const std::string& execute_command = exec_path;
     std::string execute_output;
     {
         FILE* execute_pipe = popen(execute_command.c_str(), "r");

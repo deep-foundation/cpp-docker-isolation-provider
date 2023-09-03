@@ -3,7 +3,7 @@
 
 using namespace httplib;
 
-static DeepClientCppWrapper* deepClient = nullptr;
+DeepClientCppWrapper* deepClient = nullptr;
 static int objectCreated = 0;
 
 void handlePostCall(const httplib::Request& req, httplib::Response &res) {
@@ -12,11 +12,6 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     std::string gql_urn_str = gql_urn ? std::string(gql_urn) : "http://192.168.0.135:3006/gql";
 
     try {
-        /*json json_obj = json::parse(json_data);
-        std::string code = json_obj["params"]["code"].get<std::string>();
-        auto deepClient = new DeepClientCppWrapper(json_obj["params"]["jwt"].get<std::string>(), gql_urn_str);
-        std::string result = Compiler::compileAndExecute(code, deepClient);
-        delete deepClient;*/
         json json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
         if (objectCreated) {
@@ -25,8 +20,11 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
             deepClient = new DeepClientCppWrapper(json_obj["params"]["jwt"].get<std::string>(), gql_urn_str);
             objectCreated = 1;
         }
-        json result = deepClient->select(std::make_shared<IntValue>(1))->toJson();
-        res.set_content(result.dump(), "application/json");
+        /*json result = deepClient->select(std::make_shared<IntValue>(1))->toJson();
+        res.set_content(result.dump(), "application/json");*/
+
+        std::string result = Compiler::compileAndExecute(code, deepClient);
+        res.set_content(result, "application/json");
     } catch (const std::exception& e) {
         res.set_content("Invalid JSON format: " + std::string(e.what()), "application/json");
     }
