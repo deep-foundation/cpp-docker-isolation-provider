@@ -9,9 +9,6 @@ std::shared_ptr<AssociativeArray> PyCppBridge::convertPyDictToCppArray(PyObject 
 
     while (PyDict_Next(pyDict, &pos, &pyKey, &pyValue)) {
         std::string key(PyUnicode_AsUTF8(pyKey));
-
-        std::cout << "This is a key: " << key << std::endl;
-
         if (PyLong_Check(pyValue)) {
             cppArray->cppValue[key] = std::make_shared<IntValue>(PyLong_AsLong(pyValue));
         } else if (PyFloat_Check(pyValue)) {
@@ -24,7 +21,7 @@ std::shared_ptr<AssociativeArray> PyCppBridge::convertPyDictToCppArray(PyObject 
             cppArray->cppValue[key] = convertPyListToCppArray(pyValue);
         } else {
             // Handle unsupported types as needed.
-            cppArray->cppValue[key] = nullptr;
+            cppArray->cppValue[key] = std::make_shared<NoneValue>();
         }
     }
 
@@ -49,9 +46,8 @@ std::shared_ptr<IndexedArray> PyCppBridge::convertPyListToCppArray(PyObject *pyL
         } else if (PyDict_Check(pyValue)) {
             cppArray->cppValue.push_back(convertPyDictToCppArray(pyValue));
         } else {
-            cppArray->cppValue.push_back(std::make_shared<StringValue>("none"));
             // Handle unsupported types as needed.
-            // cppArray->cppValue.push_back(nullptr);
+            cppArray->cppValue.push_back(std::make_shared<NoneValue>());
         }
     }
 

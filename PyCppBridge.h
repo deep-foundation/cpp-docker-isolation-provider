@@ -28,13 +28,30 @@ public:
     StringValue(const std::string& val) : cppValue(val) {}
 
     void print() const override {
-        std::cout << "String cppValue: " << cppValue << std::endl;
+        std::cout << "String value: " << cppValue << std::endl;
     }
 
     json toJson() const override {
         return json{
                 {"type", "string"},
-                {"cppValue", cppValue}
+                {"value", cppValue}
+        };
+    }
+};
+
+class NoneValue : public DynamicValue {
+public:
+    std::string cppValue;
+
+    NoneValue() = default;
+
+    void print() const override {
+        std::cout << "None" << std::endl;
+    }
+
+    json toJson() const override {
+        return json{
+                {"type", "none"}
         };
     }
 };
@@ -46,7 +63,7 @@ public:
     ArrayValue(const std::variant<std::string, int>& val) : cppValue(val) {}
 
     void print() const override {
-        std::cout << "Array cppValue: ";
+        std::cout << "Array value: ";
         std::visit([](const auto& v) { std::cout << v; }, cppValue);
         std::cout << std::endl;
     }
@@ -55,10 +72,10 @@ public:
         json result;
         if (std::holds_alternative<std::string>(cppValue)) {
             result["type"] = "string";
-            result["cppValue"] = std::get<std::string>(cppValue);
+            result["value"] = std::get<std::string>(cppValue);
         } else if (std::holds_alternative<int>(cppValue)) {
             result["type"] = "int";
-            result["cppValue"] = std::get<int>(cppValue);
+            result["value"] = std::get<int>(cppValue);
         }
         return result;
     }
@@ -70,7 +87,7 @@ public:
 
     void print() const override {
         for (const auto& pair : cppValue) {
-            std::cout << "Key: " << pair.first << ", cppValue: ";
+            std::cout << "Key: " << pair.first << ", value: ";
             pair.second->print();
         }
     }
@@ -110,13 +127,13 @@ public:
     IntValue(int val) : cppValue(val) {}
 
     void print() const override {
-        std::cout << "Int cppValue: " << cppValue << std::endl;
+        std::cout << "Int value: " << cppValue << std::endl;
     }
 
     json toJson() const override {
         return json{
                 {"type", "int"},
-                {"cppValue", cppValue}
+                {"value", cppValue}
         };
     }
 };
@@ -128,13 +145,13 @@ public:
     FloatValue(double val) : cppValue(val) {}
 
     void print() const override {
-        std::cout << "Float cppValue: " << cppValue << std::endl;
+        std::cout << "Float value: " << cppValue << std::endl;
     }
 
     json toJson() const override {
         return json{
                 {"type", "float"},
-                {"cppValue", cppValue}
+                {"value", cppValue}
         };
     }
 };
