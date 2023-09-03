@@ -13,18 +13,18 @@ std::shared_ptr<AssociativeArray> PyCppBridge::convertPyDictToCppArray(PyObject 
         std::cout << "This is a key: " << key << std::endl;
 
         if (PyLong_Check(pyValue)) {
-            cppArray->value[key] = std::make_shared<IntValue>(PyLong_AsLong(pyValue));
+            cppArray->cppValue[key] = std::make_shared<IntValue>(PyLong_AsLong(pyValue));
         } else if (PyFloat_Check(pyValue)) {
-            cppArray->value[key] = std::make_shared<FloatValue>(PyFloat_AsDouble(pyValue));
+            cppArray->cppValue[key] = std::make_shared<FloatValue>(PyFloat_AsDouble(pyValue));
         } else if (PyUnicode_Check(pyValue)) {
-            cppArray->value[key] = std::make_shared<StringValue>(PyUnicode_AsUTF8(pyValue));
+            cppArray->cppValue[key] = std::make_shared<StringValue>(PyUnicode_AsUTF8(pyValue));
         } else if (PyDict_Check(pyValue)) {
-            cppArray->value[key] = convertPyDictToCppArray(pyValue);
+            cppArray->cppValue[key] = convertPyDictToCppArray(pyValue);
         } else if (PyList_Check(pyValue)) {
-            cppArray->value[key] = convertPyListToCppArray(pyValue);
+            cppArray->cppValue[key] = convertPyListToCppArray(pyValue);
         } else {
             // Handle unsupported types as needed.
-            cppArray->value[key] = nullptr;
+            cppArray->cppValue[key] = nullptr;
         }
     }
 
@@ -39,18 +39,19 @@ std::shared_ptr<IndexedArray> PyCppBridge::convertPyListToCppArray(PyObject *pyL
         PyObject* pyValue = PyList_GetItem(pyList, i);
 
         if (PyLong_Check(pyValue)) {
-            cppArray->value.push_back(std::make_shared<IntValue>(PyLong_AsLong(pyValue)));
+            cppArray->cppValue.push_back(std::make_shared<IntValue>(PyLong_AsLong(pyValue)));
         } else if (PyFloat_Check(pyValue)) {
-            cppArray->value.push_back(std::make_shared<FloatValue>(PyFloat_AsDouble(pyValue)));
+            cppArray->cppValue.push_back(std::make_shared<FloatValue>(PyFloat_AsDouble(pyValue)));
         } else if (PyUnicode_Check(pyValue)) {
-            cppArray->value.push_back(std::make_shared<StringValue>(PyUnicode_AsUTF8(pyValue)));
+            cppArray->cppValue.push_back(std::make_shared<StringValue>(PyUnicode_AsUTF8(pyValue)));
         } else if (PyList_Check(pyValue)) {
-            cppArray->value.push_back(convertPyListToCppArray(pyValue));
+            cppArray->cppValue.push_back(convertPyListToCppArray(pyValue));
         } else if (PyDict_Check(pyValue)) {
-            cppArray->value.push_back(convertPyDictToCppArray(pyValue));
+            cppArray->cppValue.push_back(convertPyDictToCppArray(pyValue));
         } else {
+            cppArray->cppValue.push_back(std::make_shared<StringValue>("none"));
             // Handle unsupported types as needed.
-            cppArray->value.push_back(nullptr);
+            // cppArray->cppValue.push_back(nullptr);
         }
     }
 
@@ -61,7 +62,7 @@ PyObject *PyCppBridge::convertCppArrayToPyDict(const std::shared_ptr<Associative
     const auto& associativeArray = dynamic_cast<const AssociativeArray&>(*cppArray);
     PyObject* pyDict = PyDict_New();
 
-    for (const auto& pair : associativeArray.value) {
+    for (const auto& pair : associativeArray.cppValue) {
         PyObject* pyKey = PyUnicode_DecodeFSDefault(pair.first.c_str());
         PyObject* pyValue = PyCppBridge::convertCppArrayToPyObject(pair.second);
 
@@ -76,10 +77,10 @@ PyObject *PyCppBridge::convertCppArrayToPyDict(const std::shared_ptr<Associative
 
 PyObject *PyCppBridge::convertCppArrayToPyList(const std::shared_ptr<IndexedArray> &cppArray) {
     const auto& indexedArray = dynamic_cast<const IndexedArray&>(*cppArray);
-    PyObject* pyList = PyList_New(indexedArray.value.size());
+    PyObject* pyList = PyList_New(indexedArray.cppValue.size());
 
-    for (size_t i = 0; i < indexedArray.value.size(); ++i) {
-        PyObject* pyValue = PyCppBridge::convertCppArrayToPyObject(indexedArray.value[i]);
+    for (size_t i = 0; i < indexedArray.cppValue.size(); ++i) {
+        PyObject* pyValue = PyCppBridge::convertCppArrayToPyObject(indexedArray.cppValue[i]);
         PyList_SET_ITEM(pyList, i, pyValue);
     }
 
@@ -111,18 +112,18 @@ PyObject *PyCppBridge::convertCppArrayToPyObject(const std::shared_ptr<DynamicVa
     } else if (std::shared_ptr<IndexedArray> indexedArray = std::dynamic_pointer_cast<IndexedArray>(sharedPtr)) {
         return PyCppBridge::convertCppArrayToPyList(indexedArray);
     } else if (std::shared_ptr<StringValue> stringValue = std::dynamic_pointer_cast<StringValue>(sharedPtr)) {
-        std::cout << "This is a StringValue with value: " << stringValue->value << std::endl;
-        return PyUnicode_DecodeUTF8(stringValue->value.c_str(), stringValue->value.size(), nullptr);
+        std::cout << "This is a StringValue with cppValue: " << stringValue->cppValue << std::endl;
+        return PyUnicode_DecodeUTF8(stringValue->cppValue.c_str(), stringValue->cppValue.size(), nullptr);
     } else if (std::shared_ptr<ArrayValue> arrayValue = std::dynamic_pointer_cast<ArrayValue>(sharedPtr)) {
         std::cout << "This is an ArrayValue" << std::endl;
         Py_INCREF(Py_None);
         return Py_None;
     } else if (std::shared_ptr<IntValue> intValue = std::dynamic_pointer_cast<IntValue>(sharedPtr)) {
-        std::cout << "This is an IntValue with value: " << intValue->value << std::endl;
-        return PyLong_FromLong(intValue->value);
+        std::cout << "This is an IntValue with cppValue: " << intValue->cppValue << std::endl;
+        return PyLong_FromLong(intValue->cppValue);
     } else if (std::shared_ptr<FloatValue> floatValue = std::dynamic_pointer_cast<FloatValue>(sharedPtr)) {
-        std::cout << "This is a FloatValue with value: " << floatValue->value << std::endl;
-        return PyFloat_FromDouble(floatValue->value);
+        std::cout << "This is a FloatValue with cppValue: " << floatValue->cppValue << std::endl;
+        return PyFloat_FromDouble(floatValue->cppValue);
     } else {
         std::cout << "Unknown type" << std::endl;
         Py_INCREF(Py_None);

@@ -23,42 +23,42 @@ public:
 
 class StringValue : public DynamicValue {
 public:
-    std::string value;
+    std::string cppValue;
 
-    StringValue(const std::string& val) : value(val) {}
+    StringValue(const std::string& val) : cppValue(val) {}
 
     void print() const override {
-        std::cout << "String value: " << value << std::endl;
+        std::cout << "String cppValue: " << cppValue << std::endl;
     }
 
     json toJson() const override {
         return json{
                 {"type", "string"},
-                {"value", value}
+                {"cppValue", cppValue}
         };
     }
 };
 
 class ArrayValue : public DynamicValue {
 public:
-    std::variant<std::string, int> value;
+    std::variant<std::string, int> cppValue;
 
-    ArrayValue(const std::variant<std::string, int>& val) : value(val) {}
+    ArrayValue(const std::variant<std::string, int>& val) : cppValue(val) {}
 
     void print() const override {
-        std::cout << "Array value: ";
-        std::visit([](const auto& v) { std::cout << v; }, value);
+        std::cout << "Array cppValue: ";
+        std::visit([](const auto& v) { std::cout << v; }, cppValue);
         std::cout << std::endl;
     }
 
     json toJson() const override {
         json result;
-        if (std::holds_alternative<std::string>(value)) {
+        if (std::holds_alternative<std::string>(cppValue)) {
             result["type"] = "string";
-            result["value"] = std::get<std::string>(value);
-        } else if (std::holds_alternative<int>(value)) {
+            result["cppValue"] = std::get<std::string>(cppValue);
+        } else if (std::holds_alternative<int>(cppValue)) {
             result["type"] = "int";
-            result["value"] = std::get<int>(value);
+            result["cppValue"] = std::get<int>(cppValue);
         }
         return result;
     }
@@ -66,18 +66,18 @@ public:
 
 class AssociativeArray : public DynamicValue {
 public:
-    std::map<std::string, std::shared_ptr<DynamicValue>> value;
+    std::map<std::string, std::shared_ptr<DynamicValue>> cppValue;
 
     void print() const override {
-        for (const auto& pair : value) {
-            std::cout << "Key: " << pair.first << ", Value: ";
+        for (const auto& pair : cppValue) {
+            std::cout << "Key: " << pair.first << ", cppValue: ";
             pair.second->print();
         }
     }
 
     json toJson() const {
         json json_obj;
-        for (const auto& pair : value) {
+        for (const auto& pair : cppValue) {
             json_obj[pair.first] = pair.second->toJson();
         }
         return json_obj;
@@ -86,18 +86,18 @@ public:
 
 class IndexedArray : public DynamicValue {
 public:
-    std::vector<std::shared_ptr<DynamicValue>> value;
+    std::vector<std::shared_ptr<DynamicValue>> cppValue;
 
     void print() const override {
-        for (const auto& item : value) {
+        for (const auto& item : cppValue) {
             item->print();
         }
     }
 
     json toJson() const {
         json json_obj;
-        for (size_t i = 0; i < value.size(); i++) {
-            json_obj[i] = value[i]->toJson();
+        for (size_t i = 0; i < cppValue.size(); i++) {
+            json_obj[i] = cppValue[i]->toJson();
         }
         return json_obj;
     }
@@ -105,36 +105,36 @@ public:
 
 class IntValue : public DynamicValue {
 public:
-    int value;
+    int cppValue;
 
-    IntValue(int val) : value(val) {}
+    IntValue(int val) : cppValue(val) {}
 
     void print() const override {
-        std::cout << "Int value: " << value << std::endl;
+        std::cout << "Int cppValue: " << cppValue << std::endl;
     }
 
     json toJson() const override {
         return json{
                 {"type", "int"},
-                {"value", value}
+                {"cppValue", cppValue}
         };
     }
 };
 
 class FloatValue : public DynamicValue {
 public:
-    double value;
+    double cppValue;
 
-    FloatValue(double val) : value(val) {}
+    FloatValue(double val) : cppValue(val) {}
 
     void print() const override {
-        std::cout << "Float value: " << value << std::endl;
+        std::cout << "Float cppValue: " << cppValue << std::endl;
     }
 
     json toJson() const override {
         return json{
                 {"type", "float"},
-                {"value", value}
+                {"cppValue", cppValue}
         };
     }
 };

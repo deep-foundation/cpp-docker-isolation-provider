@@ -25,6 +25,8 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
             deepClient = new DeepClientCppWrapper(json_obj["params"]["jwt"].get<std::string>(), gql_urn_str);
             objectCreated = 1;
         }
+        auto deepClientSelect = deepClient->select(std::make_shared<IntValue>(1));
+        deepClientSelect->print();
         json result = deepClient->select(std::make_shared<IntValue>(1))->toJson();
         res.set_content(result.dump(), "application/json");
     } catch (const std::exception& e) {
