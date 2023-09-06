@@ -9,7 +9,7 @@ extern DeepClientCppWrapper* deepClient;
 
 class Compiler {
 public:
-    static std::string compileAndExecute(const std::string& code, DeepClientCppWrapper* deepClient);
+    static std::string compileAndExecute(const std::string& code);
 };
 
 #endif // COMPILER_H

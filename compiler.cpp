@@ -1,6 +1,6 @@
 #include "compiler.h"
 
-std::string Compiler::compileAndExecute(const std::string &code, DeepClientCppWrapper* deepClient) {
+std::string Compiler::compileAndExecute(const std::string &code) {
     srand(static_cast<unsigned int>(time(nullptr)));
     std::string random_folder_name = "tmp/cpp_" + std::to_string(rand());
 
@@ -19,7 +19,7 @@ std::string Compiler::compileAndExecute(const std::string &code, DeepClientCppWr
     source_file << code;
     source_file.close();
 
-    std::string compile_command = "g++ -o " + exec_path + " " + source_path + " 2>&1";
+    std::string compile_command = "g++ -o " + exec_path + " " + source_path + " -L. -lcpp-docker-isolation-provider-lib 2>&1";
     FILE* compile_pipe = popen(compile_command.c_str(), "r");
     if (!compile_pipe) {
         return "Compilation execution failed.";
