@@ -16,7 +16,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(PythonLibs REQUIRED)
 
-add_executable(cpp-docker-isolation-provider
+add_library(cpp-docker-isolation-provider-lib SHARED
         nlohmann/json.hpp
         PyCppBridge.h
         compiler.h
@@ -24,18 +24,23 @@ add_executable(cpp-docker-isolation-provider
         PyCppBridge.cpp
         DeepClientCppWrapper.cpp
         compiler.cpp
-        docker-isolation-provider.cpp
 )
 
 # Link against Boost libraries
-TARGET_LINK_LIBRARIES(cpp-docker-isolation-provider ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
+TARGET_LINK_LIBRARIES(cpp-docker-isolation-provider-lib ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
 
-target_include_directories(cpp-docker-isolation-provider PRIVATE ${CMAKE_SOURCE_DIR}/nlohmann)
+target_include_directories(cpp-docker-isolation-provider-lib PRIVATE ${CMAKE_SOURCE_DIR}/nlohmann)
 
-set_target_properties(cpp-docker-isolation-provider
+set_target_properties(cpp-docker-isolation-provider-lib
   PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
   PREFIX ""
 )
+
+add_executable(cpp-docker-isolation-provider
+        docker-isolation-provider.cpp
+)
+
+target_link_libraries(cpp-docker-isolation-provider cpp-docker-isolation-provider-lib)
