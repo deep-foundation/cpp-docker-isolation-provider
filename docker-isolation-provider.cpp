@@ -20,7 +20,8 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
         /*json result = deepClient->select(std::make_shared<IntValue>(1))->toJson();
         res.set_content(result.dump(), "application/json");*/
 
-        std::string result = Compiler::compileAndExecute(code);
+        std::string result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
+                                                         gql_urn_str);
         res.set_content(result, "application/json");
     } catch (const std::exception& e) {
         res.set_content("Invalid JSON format: " + std::string(e.what()), "application/json");

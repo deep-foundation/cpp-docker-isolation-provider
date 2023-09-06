@@ -3,13 +3,9 @@
 
 #include "PyCppBridge.h"
 
-class DeepClientCppWrapper;
-
-extern DeepClientCppWrapper* deepClient;
-
 class Compiler {
 public:
-    static std::string compileAndExecute(const std::string& code);
+    static std::string compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn);
 };
 
 #endif // COMPILER_H
