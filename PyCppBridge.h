@@ -33,8 +33,7 @@ public:
 
     json toJson() const override {
         return json{
-                {"type", "string"},
-                {"value", cppValue}
+                {cppValue}
         };
     }
 };
@@ -51,7 +50,7 @@ public:
 
     json toJson() const override {
         return json{
-                {"type", "none"}
+                {"none"}
         };
     }
 };
@@ -132,8 +131,7 @@ public:
 
     json toJson() const override {
         return json{
-                {"type", "int"},
-                {"value", cppValue}
+                {cppValue}
         };
     }
 };
@@ -150,8 +148,7 @@ public:
 
     json toJson() const override {
         return json{
-                {"type", "float"},
-                {"value", cppValue}
+                {cppValue}
         };
     }
 };

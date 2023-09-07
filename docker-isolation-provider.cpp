@@ -6,7 +6,7 @@ using namespace httplib;
 void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     const auto& json_data = req.body;
     const char* gql_urn = std::getenv("GQL_URN");
-    std::string gql_urn_str = gql_urn ? std::string(gql_urn) : "http://192.168.0.135:3006/gql";
+    const std::string gql_urn_str = gql_urn ? std::string(gql_urn) : "http://192.168.0.135:3006/gql";
 
     try {
         json json_obj = json::parse(json_data);
