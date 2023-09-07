@@ -3,8 +3,10 @@
 .gitignore
 .idea
 __pycache__
+*__pycache__
 CMakeFiles/
 venv/
-README.md
+CMakeCache.txt
 Makefile
+README.md
 *.cmake
