@@ -13,6 +13,7 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
         std::string code = json_obj["params"]["code"].get<std::string>();
         json result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
                                                   gql_urn_str, json_obj["params"]["data"].dump());
+        std::cout << result.dump() << std::endl;
         res.set_content(result.dump(), "application/json");
     } catch (const std::exception& e) {
         json error_json = {{"rejected", "Invalid JSON format: " + std::string(e.what())}};
