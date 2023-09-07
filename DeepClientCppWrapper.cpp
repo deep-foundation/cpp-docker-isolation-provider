@@ -14,7 +14,6 @@ private:
                            "sys.path.append('.');");
         deepClientModule = PyImport_ImportModule("deep_client_interface");
         if (!deepClientModule) {
-            PyErr_Print();
             throw std::runtime_error("Failed to import required Python modules");
         }
     }
