@@ -1,6 +1,7 @@
 #include "compiler.h"
 
-std::string Compiler::compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn) {
+std::string Compiler::compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn,
+                                        const json &data) {
     srand(static_cast<unsigned int>(time(nullptr)));
     std::string random_folder_name = "tmp/cpp_" + std::to_string(rand());
 
@@ -23,8 +24,7 @@ std::string Compiler::compileAndExecute(const std::string &code, const std::stri
 int main() {
     try {
         auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
-        auto deepClientSelect = deepClient->select(std::make_shared<IntValue>(1));
-        deepClientSelect->print();
+
         delete deepClient;
         return 0;
     } catch (const std::runtime_error& e) {
@@ -77,11 +77,11 @@ int main() {
         pclose(execute_pipe);
     }
 
-    /*std::string remove_dir_command = "rm -r " + random_folder_name;
+    std::string remove_dir_command = "rm -r " + random_folder_name;
     int remove_dir_result = system(remove_dir_command.c_str());
     if (remove_dir_result != 0) {
         return "Failed to remove temporary directory.";
-    }*/
+    }
 
     return execute_output;
 }
