@@ -32,9 +32,9 @@ public:
     }
 
     json toJson() const override {
-        return json{
-                {cppValue}
-        };
+        return
+                cppValue
+        ;
     }
 };
 
@@ -49,9 +49,9 @@ public:
     }
 
     json toJson() const override {
-        return json{
-                {"none"}
-        };
+        return
+                "none"
+        ;
     }
 };
 
@@ -130,9 +130,9 @@ public:
     }
 
     json toJson() const override {
-        return json{
-                {cppValue}
-        };
+        return
+                cppValue
+        ;
     }
 };
 
@@ -147,9 +147,9 @@ public:
     }
 
     json toJson() const override {
-        return json{
-                {cppValue}
-        };
+        return
+                cppValue
+        ;
     }
 };
 

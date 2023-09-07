@@ -99,9 +99,9 @@ int main() {
 
         const std::regex regex_pattern("(error|exception|failed|Error|Exception)");
         if (std::regex_search(execute_output, regex_pattern)) {
-            return {{"rejected", "Runtime error: " + execute_output}};
+            return {{"rejected", "Runtime error: " + std::move(execute_output)}};
         } else {
-            return {{"resolved", execute_output}};
+            return {{"resolved", std::move(execute_output)}};
         }
     } catch (const std::runtime_error& e) {
         return {{"rejected", e.what()}};
