@@ -39,31 +39,31 @@ public:
         url = gql_urn_str;
     }
 
-    std::shared_ptr<DynamicValue> select(std::shared_ptr<DynamicValue> query) {
+    std::shared_ptr<DynamicValue> select(const std::shared_ptr<DynamicValue> &query) {
         return call_python_function("select", query);
     }
 
-    std::shared_ptr<DynamicValue> insert(std::shared_ptr<DynamicValue> query) {
+    std::shared_ptr<DynamicValue> insert(const std::shared_ptr<DynamicValue> &query) {
         return call_python_function("insert", query);
     }
 
-    std::shared_ptr<DynamicValue> update(std::shared_ptr<DynamicValue> query) {
+    std::shared_ptr<DynamicValue> update(const std::shared_ptr<DynamicValue> &query) {
         return call_python_function("update", query);
     }
 
-    std::shared_ptr<DynamicValue> deleteFunc(std::shared_ptr<DynamicValue> query) {
+    std::shared_ptr<DynamicValue> deleteFunc(const std::shared_ptr<DynamicValue> &query) {
         return call_python_function("delete", query);
     }
 
-    std::shared_ptr<DynamicValue> serial(std::shared_ptr<DynamicValue> query) {
+    std::shared_ptr<DynamicValue> serial(const std::shared_ptr<DynamicValue> &query) {
         return call_python_function("serial", query);
     }
 
-    std::shared_ptr<DynamicValue> id(std::shared_ptr<DynamicValue> query) {
+    std::shared_ptr<DynamicValue> id(const std::shared_ptr<DynamicValue> &query) {
         return call_python_function("id", query);
     }
 
-    std::shared_ptr<DynamicValue> call_python_function(const std::string& function_name, std::shared_ptr<DynamicValue>& query) {
+    std::shared_ptr<DynamicValue> call_python_function(const std::string& function_name, const std::shared_ptr<DynamicValue> &query) {
         std::shared_ptr<DynamicValue> result;
         if (deepClientModule) {
             PyObject* pyFunc = PyObject_GetAttrString(deepClientModule, function_name.c_str());

@@ -1,5 +1,67 @@
 # cpp-docker-isolation-provider
 
+## Quick Start
+```cpp
+std::string fn(HandlerParameters* params) {
+    //your code
+}
+```
+
+
+## Information about handler parameters
+- `/healthz` - GET - 200 - Health check endpoint
+    - Response:
+        - `{}`
+- `/init` - GET - 200 - Initialization endpoint
+    - Response:
+        - `{}`
+- `/call` and `/http-call` - GET - 200 - Call executable code of handler in this isolation provider
+    - Request:
+        - body:
+            - params:
+                - jwt: STRING - Deeplinks send this token, for create gql and deep client
+                - code: STRING - Code of handler
+                - data: {} - Data for handler execution from deeplinks
+                  > If this is type handler
+                    - oldLink - from deeplinks, link before transaction
+                    - newLink - from deeplinks, link after transaction
+                    - promiseId - from deeplinks, promise id
+    - Response:
+        - `{ resolved?: any; rejected?: any; }` - If resolved or rejected is not null, then it's result of execution
+
+
+## Information about $data in function fn
+
+- `params->deep` - Deep Client instance
+- `params->data` - Data for handler execution from deeplinks
+
+
+## Examples
+```cpp
+std::string fn(HandlerParameters* params) {
+    return params->data.dump();
+}
+```
+
+```cpp
+std::string fn(HandlerParameters* params) {
+    auto deepClientSelect = params->deep->select(std::make_shared<IntValue>(1));
+    return deepClientSelect->toJson().dump();
+}
+```
+
+```cpp
+std::string fn(HandlerParameters* params) {
+    AssociativeArray insertArray;
+    insertArray.cppValue["type_id"] = std::make_shared<IntValue>(58);
+    insertArray.cppValue["from_id"] = std::make_shared<IntValue>(0);
+    insertArray.cppValue["to_id"] = std::make_shared<IntValue>(0);
+    
+    return params->deep->insert(std::make_shared<AssociativeArray>(insertArray))->toJson().dump();
+}
+```
+
+
 ## Install/Build
 ```bash
 pip install -r requirements.txt
