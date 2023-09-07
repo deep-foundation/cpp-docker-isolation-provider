@@ -14,8 +14,8 @@ std::string escapeDoubleQuotes(const std::string& input) {
 }
 
 
-std::string Compiler::compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn,
-                                        const std::string &jsonData) {
+json Compiler::compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn,
+                                 const std::string &jsonData) {
     srand(static_cast<unsigned int>(time(nullptr)));
     std::string random_folder_name = "tmp/cpp_" + std::to_string(rand());
 
@@ -24,7 +24,7 @@ std::string Compiler::compileAndExecute(const std::string &code, const std::stri
 
     int create_dir_result = mkdir(random_folder_name.c_str(), 0700);
     if (create_dir_result != 0) {
-        return "Failed to create temporary directory.";
+        return {{"rejected", "Failed to create temporary directory."}};
     }
 
     std::string code_template = R"(
@@ -36,21 +36,17 @@ std::string Compiler::compileAndExecute(const std::string &code, const std::stri
 )"+ code + R"(
 
 int main() {
-    try {
-        auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
-        auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
-        delete deepClient;
-        return 0;
-    } catch (const std::runtime_error& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
-    }
+    auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
+    auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
+    std::cout << fn(params) << std::endl;
+    delete deepClient;
+    return 0;
 }
 )";
 
     std::ofstream source_file(source_path);
     if (!source_file) {
-        return "Failed to create source file.";
+        return {{"rejected", "Failed to create source file."}};
     }
     source_file << code_template;
     source_file.close();
@@ -61,7 +57,7 @@ int main() {
 
     FILE* compile_pipe = popen(compile_command.c_str(), "r");
     if (!compile_pipe) {
-        return "Compilation execution failed.";
+        return {{"rejected", "Compilation execution failed."}};
     }
 
     std::string compile_output;
@@ -72,30 +68,34 @@ int main() {
 
     int compile_result = pclose(compile_pipe);
     if (compile_result != 0) {
-        return "Compilation failed:\n" + compile_output;
+        return {{"rejected", "Compilation failed:\n" + compile_output}};
     }
 
     const std::string& execute_command = "LD_LIBRARY_PATH=. " + exec_path;
-    std::string execute_output;
-    {
-        FILE* execute_pipe = popen(execute_command.c_str(), "r");
-        if (!execute_pipe) {
-            return "Execution failed.";
+    try {
+        std::string execute_output;
+        {
+            FILE* execute_pipe = popen(execute_command.c_str(), "r");
+            if (!execute_pipe) {
+                return "Execution failed.";
+            }
+
+            char buffer[128];
+            while (fgets(buffer, sizeof(buffer), execute_pipe) != nullptr) {
+                execute_output += buffer;
+            }
+
+            pclose(execute_pipe);
         }
 
-        char buffer[128];
-        while (fgets(buffer, sizeof(buffer), execute_pipe) != nullptr) {
-            execute_output += buffer;
+        std::string remove_dir_command = "rm -r " + random_folder_name;
+        int remove_dir_result = system(remove_dir_command.c_str());
+        if (remove_dir_result != 0) {
+            return {{"rejected", "Failed to remove temporary directory."}};
         }
 
-        pclose(execute_pipe);
+        return {{"resolved", execute_output}};
+    } catch (const std::runtime_error& e) {
+        return {{"rejected", e.what()}};
     }
-
-    std::string remove_dir_command = "rm -r " + random_folder_name;
-    int remove_dir_result = system(remove_dir_command.c_str());
-    if (remove_dir_result != 0) {
-        return "Failed to remove temporary directory.";
-    }
-
-    return execute_output;
 }

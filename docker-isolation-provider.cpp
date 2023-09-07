@@ -11,10 +11,10 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     try {
         json json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
-        std::string result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
-                                                         gql_urn_str, json_obj["params"]["data"].dump());
-        json result_json = {{"resolved", result}};
-        res.set_content(result_json.dump(), "application/json");
+        json result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
+                gql_urn_str, json_obj["params"]["data"].dump());
+        // json result_json = {{"resolved", result}};
+        res.set_content(result.dump(), "application/json");
     } catch (const std::exception& e) {
         json error_json = {{"rejected", "Invalid JSON format: " + std::string(e.what())}};
         res.set_content(error_json.dump(), "application/json");

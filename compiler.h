@@ -25,8 +25,8 @@ public:
 
 class Compiler {
 public:
-    static std::string compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn,
-                                         const std::string &jsonData);
+    static json compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn,
+                                  const std::string &jsonData);
 };
 
 #endif // COMPILER_H
