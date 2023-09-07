@@ -34,16 +34,16 @@ json Compiler::compileAndExecute(const std::string &code, const std::string &jwt
 )"+ code + R"(
 
 int main() {
-    //try {
+    try {
         auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
         auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
         std::cout << fn(params) << std::endl;
         delete deepClient;
         return 0;
-    /*} catch (const std::exception& e) {
+    } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
         return 1;
-    }*/
+    }
 }
 )";
 
@@ -99,14 +99,12 @@ int main() {
 
         std::cout << execute_output << std::endl;
 
-        return {{"resolved", std::move(execute_output)}};
-
-        /*const std::regex regex_pattern("(error|exception|failed|Error|Exception)");
+        const std::regex regex_pattern("(error|exception|failed|Error|Exception)");
         if (std::regex_search(execute_output, regex_pattern)) {
             return {{"rejected", "Runtime error: " + std::move(execute_output)}};
         } else {
             return {{"resolved", std::move(execute_output)}};
-        }*/
+        }
     } catch (const std::runtime_error& e) {
         return {{"rejected", e.what()}};
     }
