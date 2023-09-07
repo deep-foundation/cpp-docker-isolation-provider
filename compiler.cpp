@@ -35,7 +35,7 @@ json Compiler::compileAndExecute(const std::string &code, const std::string &jwt
 
 int main() {
     try {
-        auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
+        auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ escapeDoubleQuotes(gql_urn) + R"(");
         auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
         std::cout << fn(params) << std::endl;
         delete deepClient;
