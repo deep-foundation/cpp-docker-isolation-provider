@@ -35,7 +35,7 @@ json Compiler::compileAndExecute(const std::string &code, const std::string &jwt
 
 int main() {
     try {
-        auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ escapeDoubleQuotes(gql_urn) + R"(");
+        auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
         auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
         std::cout << fn(params) << std::endl;
         delete deepClient;
@@ -97,12 +97,14 @@ int main() {
             return {{"rejected", "Failed to remove temporary directory."}};
         }
 
-        const std::regex regex_pattern("(error|exception|failed|Error|Exception)");
+        return {{"resolved", std::move(execute_output)}};
+
+        /*const std::regex regex_pattern("(error|exception|failed|Error|Exception)");
         if (std::regex_search(execute_output, regex_pattern)) {
             return {{"rejected", "Runtime error: " + std::move(execute_output)}};
         } else {
             return {{"resolved", std::move(execute_output)}};
-        }
+        }*/
     } catch (const std::runtime_error& e) {
         return {{"rejected", e.what()}};
     }
