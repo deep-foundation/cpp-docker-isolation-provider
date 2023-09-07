@@ -97,6 +97,8 @@ int main() {
             return {{"rejected", "Failed to remove temporary directory."}};
         }
 
+        std::cout << execute_output << std::endl;
+
         return {{"resolved", std::move(execute_output)}};
 
         /*const std::regex regex_pattern("(error|exception|failed|Error|Exception)");
