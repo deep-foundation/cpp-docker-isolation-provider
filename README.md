@@ -6,6 +6,7 @@ std::string fn(HandlerParameters* params) {
     //your code
 }
 ```
+#### or install @archer-lotos/cpp-tests package in deep
 
 
 ## Information about handler parameters

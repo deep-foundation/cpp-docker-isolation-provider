@@ -22,4 +22,6 @@ COPY . /app
 
 RUN chmod +x /app/cpp-docker-isolation-provider
 
+ENV LD_LIBRARY_PATH=.
+
 CMD ["/app/cpp-docker-isolation-provider"]
