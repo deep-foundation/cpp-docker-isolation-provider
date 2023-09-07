@@ -1,19 +1,51 @@
 #include "compiler.h"
 #include "DeepClientCppWrapper.cpp"
+#include <thread>
+#include <mutex>
 
 using namespace httplib;
+
+std::mutex compile_mutex;
+
+void compileAndExecuteThread(const std::string &code, const std::string &jwt, const std::string &gql_urn,
+                             const std::string &jsonData, json &result) {
+    try {
+        json compile_result = Compiler::compileAndExecute(code, jwt, gql_urn, jsonData);
+        std::lock_guard<std::mutex> lock(compile_mutex);
+        result = compile_result;
+    } catch (const std::exception &e) {
+        std::lock_guard<std::mutex> lock(compile_mutex);
+        result = {{"rejected", "Compilation or execution error: " + std::string(e.what())}};
+    }
+}
 
 void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     const auto& json_data = req.body;
     const char* gql_urn = std::getenv("GQL_URN");
-    std::string gql_urn_str = gql_urn ? std::string(gql_urn) : "http://192.168.0.135:3006/gql";
+    const std::string gql_urn_str = gql_urn ? std::string(gql_urn) : "http://192.168.0.135:3006/gql";
 
     try {
         json json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
-        json result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
-                gql_urn_str, json_obj["params"]["data"].dump());
-        res.set_content(result.dump(), "application/json");
+
+        std::vector<std::thread> threads;
+
+        std::vector<json> thread_results(json_obj["params"]["data"].size());
+
+        for (size_t i = 0; i < json_obj["params"]["data"].size(); ++i) {
+            threads.emplace_back(compileAndExecuteThread, code, json_obj["params"]["jwt"].get<std::string>(), gql_urn_str, json_obj["params"]["data"][i].dump(), std::ref(thread_results[i]));
+        }
+
+        for (auto &thread : threads) {
+            thread.join();
+        }
+
+        json result_array = json::array();
+        for (const auto &thread_result : thread_results) {
+            result_array.push_back(thread_result);
+        }
+
+        res.set_content(result_array.dump(), "application/json");
     } catch (const std::exception& e) {
         json error_json = {{"rejected", "Invalid JSON format: " + std::string(e.what())}};
         res.set_content(error_json.dump(), "application/json");
