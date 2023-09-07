@@ -1,7 +1,21 @@
 #include "compiler.h"
 
+
+std::string escapeDoubleQuotes(const std::string& input) {
+    std::string result;
+    for (char c : input) {
+        if (c == '"') {
+            result += "\\\"";
+        } else {
+            result += c;
+        }
+    }
+    return result;
+}
+
+
 std::string Compiler::compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn,
-                                        const json &data) {
+                                        const std::string &jsonData) {
     srand(static_cast<unsigned int>(time(nullptr)));
     std::string random_folder_name = "tmp/cpp_" + std::to_string(rand());
 
@@ -24,7 +38,7 @@ std::string Compiler::compileAndExecute(const std::string &code, const std::stri
 int main() {
     try {
         auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
-
+        auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
         delete deepClient;
         return 0;
     } catch (const std::runtime_error& e) {

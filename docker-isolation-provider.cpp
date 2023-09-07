@@ -12,7 +12,7 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
         json json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
         std::string result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
-                                                         gql_urn_str, json_obj["params"]["data"]);
+                                                         gql_urn_str, json_obj["params"]["data"].dump());
         json result_json = {{"resolved", result}};
         res.set_content(result_json.dump(), "application/json");
     } catch (const std::exception& e) {

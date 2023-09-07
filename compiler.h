@@ -8,7 +8,7 @@ class DeepClientCppWrapper;
 class HandlerParameters {
 public:
     DeepClientCppWrapper* deep = nullptr;
-    json* data;
+    json data;
 
     HandlerParameters() {
     }
@@ -16,9 +16,9 @@ public:
     ~HandlerParameters() {
     }
 
-    HandlerParameters(DeepClientCppWrapper* deepClient, json* jsonData) {
+    HandlerParameters(DeepClientCppWrapper* deepClient, const std::string &jsonData) {
         deep = deepClient;
-        data = jsonData;
+        data = json::parse(jsonData);
     }
 
 };
@@ -26,7 +26,7 @@ public:
 class Compiler {
 public:
     static std::string compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn,
-                                         const json &data);
+                                         const std::string &jsonData);
 };
 
 #endif // COMPILER_H
