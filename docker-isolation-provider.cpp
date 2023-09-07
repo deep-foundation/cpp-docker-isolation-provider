@@ -23,6 +23,8 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
 int main(void) {
     const char* port = std::getenv("PORT");
 
+    srand(static_cast<unsigned int>(time(nullptr)));
+
     Server svr;
 
     svr.Post("/stop-server", [&](const httplib::Request &, httplib::Response &res) {
