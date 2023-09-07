@@ -11,20 +11,13 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     try {
         json json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
-        /*if (objectCreated) {
-            //result = "objectCreated";
-        } else {
-            deepClient = new DeepClientCppWrapper(json_obj["params"]["jwt"].get<std::string>(), gql_urn_str);
-            objectCreated = 1;
-        }*/
-        /*json result = deepClient->select(std::make_shared<IntValue>(1))->toJson();
-        res.set_content(result.dump(), "application/json");*/
-
         std::string result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
                                                          gql_urn_str);
-        res.set_content(result, "application/json");
+        json result_json = {{"resolved", result}};
+        res.set_content(result_json.dump(), "application/json");
     } catch (const std::exception& e) {
-        res.set_content("Invalid JSON format: " + std::string(e.what()), "application/json");
+        json error_json = {{"rejected", "Invalid JSON format: " + std::string(e.what())}};
+        res.set_content(error_json.dump(), "application/json");
     }
 }
 

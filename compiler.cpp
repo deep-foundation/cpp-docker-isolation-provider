@@ -16,25 +16,21 @@ std::string Compiler::compileAndExecute(const std::string &code, const std::stri
 #include <iostream>
 #include "compiler.h"
 #include "DeepClientCppWrapper.cpp"
+#include <stdexcept>
 
-int* returnArray() {
-    static int data[] = {1, 2, 3};
-    return data;
-}
+)"+ code + R"(
 
 int main() {
-    int* arrayPtr = returnArray();
-
-    auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
-
-    auto deepClientSelect = deepClient->select(std::make_shared<IntValue>(1));
-    deepClientSelect->print();
-
-    for (int i = 0; i < 3; ++i) {
-        std::cout << arrayPtr[i] << " ";
+    try {
+        auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
+        auto deepClientSelect = deepClient->select(std::make_shared<IntValue>(1));
+        deepClientSelect->print();
+        delete deepClient;
+        return 0;
+    } catch (const std::runtime_error& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
     }
-
-    return 0;
 }
 )";
 
@@ -45,7 +41,10 @@ int main() {
     source_file << code_template;
     source_file.close();
 
-    std::string compile_command = "g++ -o " + exec_path + " " + source_path + " -I. -I./python/ -L.cpp-docker-isolation-provider-lib 2>&1";
+    std::string compile_command = "g++ -o " + exec_path + " " + source_path + " -I. -I./python/ "
+                                                                              "-L. -lprovider-cpp "
+                                                                              "-L/usr/lib/x86_64-linux-gnu/ -lpython3.10 2>&1";
+
     FILE* compile_pipe = popen(compile_command.c_str(), "r");
     if (!compile_pipe) {
         return "Compilation execution failed.";
@@ -62,7 +61,7 @@ int main() {
         return "Compilation failed:\n" + compile_output;
     }
 
-    const std::string& execute_command = exec_path;
+    const std::string& execute_command = "LD_LIBRARY_PATH=. " + exec_path;
     std::string execute_output;
     {
         FILE* execute_pipe = popen(execute_command.c_str(), "r");

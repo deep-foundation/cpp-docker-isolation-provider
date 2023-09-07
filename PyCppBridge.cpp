@@ -108,20 +108,20 @@ PyObject *PyCppBridge::convertCppArrayToPyObject(const std::shared_ptr<DynamicVa
     } else if (std::shared_ptr<IndexedArray> indexedArray = std::dynamic_pointer_cast<IndexedArray>(sharedPtr)) {
         return PyCppBridge::convertCppArrayToPyList(indexedArray);
     } else if (std::shared_ptr<StringValue> stringValue = std::dynamic_pointer_cast<StringValue>(sharedPtr)) {
-        std::cout << "This is a StringValue with cppValue: " << stringValue->cppValue << std::endl;
+        // std::cout << "This is a StringValue with cppValue: " << stringValue->cppValue << std::endl;
         return PyUnicode_DecodeUTF8(stringValue->cppValue.c_str(), stringValue->cppValue.size(), nullptr);
     } else if (std::shared_ptr<ArrayValue> arrayValue = std::dynamic_pointer_cast<ArrayValue>(sharedPtr)) {
-        std::cout << "This is an ArrayValue" << std::endl;
+        // std::cout << "This is an ArrayValue" << std::endl;
         Py_INCREF(Py_None);
         return Py_None;
     } else if (std::shared_ptr<IntValue> intValue = std::dynamic_pointer_cast<IntValue>(sharedPtr)) {
-        std::cout << "This is an IntValue with cppValue: " << intValue->cppValue << std::endl;
+        // std::cout << "This is an IntValue with cppValue: " << intValue->cppValue << std::endl;
         return PyLong_FromLong(intValue->cppValue);
     } else if (std::shared_ptr<FloatValue> floatValue = std::dynamic_pointer_cast<FloatValue>(sharedPtr)) {
-        std::cout << "This is a FloatValue with cppValue: " << floatValue->cppValue << std::endl;
+        // std::cout << "This is a FloatValue with cppValue: " << floatValue->cppValue << std::endl;
         return PyFloat_FromDouble(floatValue->cppValue);
     } else {
-        std::cout << "Unknown type" << std::endl;
+        // std::cout << "Unknown type" << std::endl;
         Py_INCREF(Py_None);
         return Py_None;
     }

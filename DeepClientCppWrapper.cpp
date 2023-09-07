@@ -80,14 +80,12 @@ public:
                 if (pyResult) {
                     if (PyUnicode_Check(pyResult)) {
                         const char* str_value = PyUnicode_AsUTF8(pyResult);
-                        auto stringValue = std::make_shared<StringValue>(str_value);
                         throw std::runtime_error(str_value);
-                        //return stringValue;
                     } else if (PyList_Check(pyResult)) {
-                        std::cout << "This is an IndexedArray" << std::endl;
+                        // std::cout << "This is an IndexedArray" << std::endl;
                         return PyCppBridge::convertPyListToCppArray(pyResult);
                     } else if (PyDict_Check(pyResult)) {
-                        std::cout << "This is an AssociativeArray" << std::endl;
+                        // std::cout << "This is an AssociativeArray" << std::endl;
                         return PyCppBridge::convertPyDictToCppArray(pyResult);
                     } else {
                         std::string errorText = PyCppBridge::getPythonErrorText();
