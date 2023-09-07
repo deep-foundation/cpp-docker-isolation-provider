@@ -2,6 +2,7 @@
 .git
 .gitignore
 .idea
+__pycache__
 CMakeFiles/
 venv/
 README.md
