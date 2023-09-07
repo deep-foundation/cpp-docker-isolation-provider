@@ -3,6 +3,7 @@
 .gitignore
 .idea
 CMakeFiles/
+venv/
 README.md
 Makefile
 *.cmake
