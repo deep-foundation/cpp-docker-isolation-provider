@@ -1,0 +1,8 @@
+.github
+.git
+.gitignore
+.idea
+CMakeFiles/
+README.md
+Makefile
+*.cmake
