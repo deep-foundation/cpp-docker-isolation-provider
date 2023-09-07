@@ -31,10 +31,21 @@ std::string fn(HandlerParameters* params) {
         - `{ resolved?: any; rejected?: any; }` - If resolved or rejected is not null, then it's result of execution
 
 
-## Information about $data in function fn
+## Information about params in function fn
 
 - `params->deep` - Deep Client instance
 - `params->data` - Data for handler execution from deeplinks
+```cpp
+class HandlerParameters {
+public:
+    DeepClientCppWrapper* deep = nullptr;
+    json data;
+    HandlerParameters(DeepClientCppWrapper* deepClient, const std::string &jsonData) {
+        deep = deepClient;
+        data = json::parse(jsonData);
+    }
+};
+```
 
 
 ## Examples
