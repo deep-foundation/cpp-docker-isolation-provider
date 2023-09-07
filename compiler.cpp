@@ -36,11 +36,16 @@ json Compiler::compileAndExecute(const std::string &code, const std::string &jwt
 )"+ code + R"(
 
 int main() {
-    auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
-    auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
-    std::cout << fn(params) << std::endl;
-    delete deepClient;
-    return 0;
+    try {
+        auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
+        auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
+        std::cout << fn(params) << std::endl;
+        delete deepClient;
+        return 0;
+    } catch (const std::runtime_error& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
 }
 )";
 
@@ -77,7 +82,7 @@ int main() {
         {
             FILE* execute_pipe = popen(execute_command.c_str(), "r");
             if (!execute_pipe) {
-                return "Execution failed.";
+                return {{"rejected", "Execution failed."}};
             }
 
             char buffer[128];
@@ -94,7 +99,12 @@ int main() {
             return {{"rejected", "Failed to remove temporary directory."}};
         }
 
-        return {{"resolved", execute_output}};
+        const std::regex regex_pattern("(failed|Error|Exception)");
+        if (std::regex_search(execute_output, regex_pattern)) {
+            return {{"rejected", "Runtime error: " + std::move(execute_output)}};
+        } else {
+            return {{"resolved", std::move(execute_output)}};
+        }
     } catch (const std::runtime_error& e) {
         return {{"rejected", e.what()}};
     }
