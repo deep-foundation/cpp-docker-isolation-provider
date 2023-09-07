@@ -1,43 +1,18 @@
 #include "compiler.h"
 #include "DeepClientCppWrapper.cpp"
-#include <thread>
-#include <mutex>
 
 using namespace httplib;
-
-json compileAndExecuteThread(const std::string &code, const std::string &jwt, const std::string &gql_urn,
-                             const std::string &jsonData) {
-
-    json compile_result;
-
-    try {
-        // compile the code in a separate thread
-        std::thread compile_thread([&]() {
-            try {
-                compile_result = Compiler::compileAndExecute(code, jwt, gql_urn, jsonData);
-            } catch (const std::exception &e) {
-                compile_result = {{"rejected", "Compilation error: " + std::string(e.what())}};
-            }
-        });
-
-        // wait for the compile thread to finish
-        compile_thread.join();
-        return compile_result;
-    } catch (const std::exception &e) {
-        return {{"rejected", "Error: " + std::string(e.what())}};
-    }
-}
 
 void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     const auto& json_data = req.body;
     const char* gql_urn = std::getenv("GQL_URN");
-    const std::string gql_urn_str = gql_urn ? std::string(gql_urn) : "http://192.168.0.135:3006/gql";
+    std::string gql_urn_str = gql_urn ? std::string(gql_urn) : "http://192.168.0.135:3006/gql";
 
     try {
         json json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
-        json result = compileAndExecuteThread(code, json_obj["params"]["jwt"].get<std::string>(),
-                gql_urn_str, json_obj["params"]["data"].dump());
+        json result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
+                                                  gql_urn_str, json_obj["params"]["data"].dump());
         res.set_content(result.dump(), "application/json");
     } catch (const std::exception& e) {
         json error_json = {{"rejected", "Invalid JSON format: " + std::string(e.what())}};

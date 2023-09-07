@@ -1,5 +1,5 @@
 #include "compiler.h"
-
+#include <chrono>
 
 std::string escapeDoubleQuotes(const std::string& input) {
     std::string result;
@@ -16,8 +16,11 @@ std::string escapeDoubleQuotes(const std::string& input) {
 
 json Compiler::compileAndExecute(const std::string &code, const std::string &jwt, const std::string &gql_urn,
                                  const std::string &jsonData) {
-    srand(static_cast<unsigned int>(time(nullptr)));
-    std::string random_folder_name = "tmp/cpp_" + std::to_string(rand());
+    unsigned int seed = static_cast<unsigned int>(time(nullptr)) + getpid();
+    srand(seed);
+    auto current_time = std::chrono::system_clock::now();
+    std::string random_folder_name = "tmp/cpp_" + std::to_string(rand())
+                                     + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(current_time.time_since_epoch()).count());
 
     std::string source_path = random_folder_name + "/temp.cpp";
     std::string exec_path = random_folder_name + "/temp";
