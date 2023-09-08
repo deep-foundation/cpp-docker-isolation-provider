@@ -1,13 +1,11 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#include "PyCppBridge.h"
-
-class DeepClientCppWrapper;
+#include "DeepClientCppWrapper.h"
 
 class HandlerParameters {
 public:
-    DeepClientCppWrapper* deep = nullptr;
+    DeepClientCppWrapper deep;
     json data;
 
     HandlerParameters() {
@@ -16,7 +14,7 @@ public:
     ~HandlerParameters() {
     }
 
-    HandlerParameters(DeepClientCppWrapper* deepClient, const std::string &jsonData) {
+    HandlerParameters(auto deepClient, auto jsonData) {
         deep = deepClient;
         data = json::parse(jsonData);
     }

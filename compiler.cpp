@@ -34,16 +34,13 @@ json Compiler::compileAndExecute(const std::string &code, const std::string &jwt
 )"+ code + R"(
 
 int main() {
-    try {
-        auto deepClient = new DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"(");
-        auto params = new HandlerParameters(deepClient, ")"+ escapeDoubleQuotes(jsonData) + R"(");
-        std::cout << fn(params) << std::endl;
-        delete deepClient;
+    //try {
+        std::cout << fn(HandlerParameters(DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"("), ")"+ escapeDoubleQuotes(jsonData) + R"(")) << std::endl;
         return 0;
-    } catch (const std::exception& e) {
+   /* } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
         return 1;
-    }
+    }*/
 }
 )";
 
