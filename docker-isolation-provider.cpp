@@ -11,8 +11,8 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     try {
         auto json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
-        auto result = Compiler::compileAndExecute(std::move(code), std::move(json_obj["params"]["jwt"].get<std::string>()),
-                                                  std::move(gql_urn_str), std::move(json_obj["params"]["data"].dump()));
+        auto result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
+                                                  gql_urn_str, json_obj["params"]["data"].dump());
         res.set_content(result.dump(), "application/json");
     } catch (const std::exception& e) {
         json error_json = {{"rejected", "Invalid JSON format: " + std::string(e.what())}};
@@ -20,7 +20,7 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     }
 }
 
-int main(void) {
+int main() {
     const char* port = std::getenv("PORT");
 
     srand(static_cast<unsigned int>(time(nullptr)));

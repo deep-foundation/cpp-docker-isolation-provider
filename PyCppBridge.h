@@ -3,6 +3,7 @@
 
 #include "nlohmann/json.hpp"
 #include <iostream>
+#include <utility>
 #include <variant>
 #include <string>
 #include <vector>
@@ -17,24 +18,70 @@ using json = nlohmann::json;
 class DynamicValue {
 public:
     virtual void print() const = 0;
-    virtual json toJson() const = 0;
-    virtual ~DynamicValue() {}
+    [[nodiscard]] virtual json toJson() const = 0;
+    virtual ~DynamicValue() = default;
+};
+
+class IntValue : public DynamicValue {
+public:
+    int cppValue;
+
+    explicit IntValue(int val) : cppValue(val) {}
+
+    void print() const override {
+        std::cout << "Int value: " << cppValue << std::endl;
+    }
+
+    [[nodiscard]] json toJson() const override {
+        return
+                cppValue
+                ;
+    }
+
+    static auto make(int val) {
+        return std::make_shared<IntValue>(val);
+    }
+};
+
+class FloatValue : public DynamicValue {
+public:
+    double cppValue;
+
+    explicit FloatValue(double val) : cppValue(val) {}
+
+    void print() const override {
+        std::cout << "Float value: " << cppValue << std::endl;
+    }
+
+    [[nodiscard]] json toJson() const override {
+        return
+                cppValue
+                ;
+    }
+
+    static auto make(double val) {
+        return std::make_shared<FloatValue>(val);
+    }
 };
 
 class StringValue : public DynamicValue {
 public:
     std::string cppValue;
 
-    StringValue(const std::string& val) : cppValue(val) {}
+    explicit StringValue(std::string val) : cppValue(std::move(val)) {}
 
     void print() const override {
         std::cout << "String value: " << cppValue << std::endl;
     }
 
-    json toJson() const override {
+    [[nodiscard]] json toJson() const override {
         return
                 cppValue
         ;
+    }
+
+    static auto make(auto val) {
+        return std::make_shared<StringValue>(val);
     }
 };
 
@@ -48,10 +95,14 @@ public:
         std::cout << "None" << std::endl;
     }
 
-    json toJson() const override {
+    [[nodiscard]] json toJson() const override {
         return
                 "none"
         ;
+    }
+
+    static auto make(auto val) {
+        return std::make_shared<NoneValue>(val);
     }
 };
 
@@ -59,7 +110,7 @@ class ArrayValue : public DynamicValue {
 public:
     std::variant<std::string, int> cppValue;
 
-    ArrayValue(const std::variant<std::string, int>& val) : cppValue(val) {}
+    explicit ArrayValue(const std::variant<std::string, int>& val) : cppValue(val) {}
 
     void print() const override {
         std::cout << "Array value: ";
@@ -67,7 +118,7 @@ public:
         std::cout << std::endl;
     }
 
-    json toJson() const override {
+    [[nodiscard]] json toJson() const override {
         json result;
         if (std::holds_alternative<std::string>(cppValue)) {
             result["type"] = "string";
@@ -84,6 +135,18 @@ class AssociativeArray : public DynamicValue {
 public:
     std::map<std::string, std::shared_ptr<DynamicValue>> cppValue;
 
+    AssociativeArray() = default;
+
+    AssociativeArray(const std::initializer_list<std::pair<std::string, int>>& values) {
+        for (const auto& pair : values) {
+            cppValue[pair.first] = std::make_shared<IntValue>(pair.second);
+        }
+    }
+
+    void addValue(const std::string& key, int value) {
+        cppValue[key] = std::make_shared<IntValue>(value);
+    }
+
     void print() const override {
         for (const auto& pair : cppValue) {
             std::cout << "Key: " << pair.first << ", value: ";
@@ -91,12 +154,16 @@ public:
         }
     }
 
-    json toJson() const {
+    [[nodiscard]] json toJson() const override {
         json json_obj;
         for (const auto& pair : cppValue) {
             json_obj[pair.first] = pair.second->toJson();
         }
         return json_obj;
+    }
+
+    static auto make(const std::initializer_list<std::pair<std::string, int>>& values) {
+        return std::make_shared<AssociativeArray>(values);
     }
 };
 
@@ -110,7 +177,7 @@ public:
         }
     }
 
-    json toJson() const {
+    [[nodiscard]] json toJson() const override {
         json json_obj;
         for (size_t i = 0; i < cppValue.size(); i++) {
             json_obj[i] = cppValue[i]->toJson();
@@ -119,39 +186,6 @@ public:
     }
 };
 
-class IntValue : public DynamicValue {
-public:
-    int cppValue;
-
-    IntValue(int val) : cppValue(val) {}
-
-    void print() const override {
-        std::cout << "Int value: " << cppValue << std::endl;
-    }
-
-    json toJson() const override {
-        return
-                cppValue
-        ;
-    }
-};
-
-class FloatValue : public DynamicValue {
-public:
-    double cppValue;
-
-    FloatValue(double val) : cppValue(val) {}
-
-    void print() const override {
-        std::cout << "Float value: " << cppValue << std::endl;
-    }
-
-    json toJson() const override {
-        return
-                cppValue
-        ;
-    }
-};
 
 class PyCppBridge {
 public:

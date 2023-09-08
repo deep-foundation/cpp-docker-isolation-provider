@@ -51,25 +51,23 @@ public:
 ## Examples
 ```cpp
 auto fn(auto params) {
-    return params->data;
+    return params.data;
 }
 ```
 
 ```cpp
 auto fn(auto params) {
-    auto deepClientSelect = params->deep->select(std::make_shared<IntValue>(1));
-    return deepClientSelect->toJson();
+    return params.deep.select(IntValue::make(1))->toJson();
 }
 ```
 
 ```cpp
 auto fn(auto params) {
-    AssociativeArray insertArray;
-    insertArray.cppValue["type_id"] = std::make_shared<IntValue>(58);
-    insertArray.cppValue["from_id"] = std::make_shared<IntValue>(0);
-    insertArray.cppValue["to_id"] = std::make_shared<IntValue>(0);
-    
-    return params->deep->insert(std::make_shared<AssociativeArray>(insertArray))->toJson();
+    return params.deep.insert(AssociativeArray::make({
+        {"type_id", 58},
+        {"from_id", 0},
+        {"to_id", 0}
+    }))->toJson();
 }
 ```
 

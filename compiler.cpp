@@ -26,21 +26,18 @@ json Compiler::compileAndExecute(const std::string &code, const std::string &jwt
     }
 
     std::string code_template = R"(
-#include <iostream>
 #include "compiler.h"
-#include "DeepClientCppWrapper.cpp"
-#include <stdexcept>
 
 )"+ code + R"(
 
 int main() {
-    //try {
+    try {
         std::cout << fn(HandlerParameters(DeepClientCppWrapper(")"+ jwt + R"(", ")"+ gql_urn + R"("), ")"+ escapeDoubleQuotes(jsonData) + R"(")) << std::endl;
         return 0;
-   /* } catch (const std::exception& e) {
+    } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
         return 1;
-    }*/
+    }
 }
 )";
 
@@ -51,11 +48,11 @@ int main() {
     source_file << code_template;
     source_file.close();
 
-    std::string compile_command = "g++ -o " + exec_path + " " + std::move(source_path) + " -std=c++20 -I. -I./python/ "
+    std::string compile_command = "g++ -o " + exec_path + " " + source_path + " -std=c++20 -I. -I./python/ "
                                                                               "-L. -lprovider-cpp "
                                                                               "-L/usr/lib/x86_64-linux-gnu/ -lpython3.10 2>&1";
 
-    FILE* compile_pipe = popen(std::move(compile_command).c_str(), "r");
+    FILE* compile_pipe = popen(compile_command.c_str(), "r");
     if (!compile_pipe) {
         return {{"rejected", "Compilation execution failed."}};
     }
@@ -66,7 +63,7 @@ int main() {
         compile_output += compile_buffer;
     }
 
-    int compile_result = pclose(std::move(compile_pipe));
+    int compile_result = pclose(compile_pipe);
     if (compile_result != 0) {
         return {{"rejected", "Compilation failed:\n" + std::move(compile_output)}};
     }

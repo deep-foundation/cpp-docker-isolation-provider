@@ -8,11 +8,9 @@ public:
     DeepClientCppWrapper deep;
     json data;
 
-    HandlerParameters() {
-    }
+    HandlerParameters() = default;
 
-    ~HandlerParameters() {
-    }
+    ~HandlerParameters() = default;
 
     HandlerParameters(auto deepClient, auto jsonData) {
         deep = deepClient;
