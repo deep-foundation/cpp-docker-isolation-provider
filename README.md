@@ -33,8 +33,8 @@ auto fn(auto params) {
 
 ## Information about params in function fn
 
-- `params->deep` - Deep Client instance
-- `params->data` - Data for handler execution from deeplinks
+- `params.deep` - Deep Client instance
+- `params.data` - Data for handler execution from deeplinks
 ```cpp
 class HandlerParameters {
 public:

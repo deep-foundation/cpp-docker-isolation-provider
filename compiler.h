@@ -12,8 +12,7 @@ public:
 
     ~HandlerParameters() = default;
 
-    HandlerParameters(auto deepClient, auto jsonData) {
-        deep = deepClient;
+    HandlerParameters(auto deepClient, auto jsonData): deep(deepClient) {
         data = json::parse(jsonData);
     }
 
