@@ -2,7 +2,7 @@
 
 ## Quick Start
 ```cpp
-std::string fn(HandlerParameters* params) {
+auto fn(auto params) {
     //your code
 }
 ```
@@ -50,26 +50,26 @@ public:
 
 ## Examples
 ```cpp
-std::string fn(HandlerParameters* params) {
-    return params->data.dump();
+auto fn(auto params) {
+    return params->data;
 }
 ```
 
 ```cpp
-std::string fn(HandlerParameters* params) {
+auto fn(auto params) {
     auto deepClientSelect = params->deep->select(std::make_shared<IntValue>(1));
-    return deepClientSelect->toJson().dump();
+    return deepClientSelect->toJson();
 }
 ```
 
 ```cpp
-std::string fn(HandlerParameters* params) {
+auto fn(auto params) {
     AssociativeArray insertArray;
     insertArray.cppValue["type_id"] = std::make_shared<IntValue>(58);
     insertArray.cppValue["from_id"] = std::make_shared<IntValue>(0);
     insertArray.cppValue["to_id"] = std::make_shared<IntValue>(0);
     
-    return params->deep->insert(std::make_shared<AssociativeArray>(insertArray))->toJson().dump();
+    return params->deep->insert(std::make_shared<AssociativeArray>(insertArray))->toJson();
 }
 ```
 

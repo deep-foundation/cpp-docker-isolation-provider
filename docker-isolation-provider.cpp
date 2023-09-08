@@ -9,10 +9,10 @@ void handlePostCall(const httplib::Request& req, httplib::Response &res) {
     const std::string gql_urn_str = gql_urn ? "http://" + std::string(gql_urn) : "http://192.168.0.135:3006/gql";
 
     try {
-        json json_obj = json::parse(json_data);
+        auto json_obj = json::parse(json_data);
         std::string code = json_obj["params"]["code"].get<std::string>();
-        json result = Compiler::compileAndExecute(code, json_obj["params"]["jwt"].get<std::string>(),
-                                                  gql_urn_str, json_obj["params"]["data"].dump());
+        auto result = Compiler::compileAndExecute(std::move(code), std::move(json_obj["params"]["jwt"].get<std::string>()),
+                                                  std::move(gql_urn_str), std::move(json_obj["params"]["data"].dump()));
         res.set_content(result.dump(), "application/json");
     } catch (const std::exception& e) {
         json error_json = {{"rejected", "Invalid JSON format: " + std::string(e.what())}};

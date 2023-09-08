@@ -54,11 +54,11 @@ int main() {
     source_file << code_template;
     source_file.close();
 
-    std::string compile_command = "g++ -o " + exec_path + " " + source_path + " -I. -I./python/ "
+    std::string compile_command = "g++ -o " + exec_path + " " + std::move(source_path) + " -std=c++20 -I. -I./python/ "
                                                                               "-L. -lprovider-cpp "
                                                                               "-L/usr/lib/x86_64-linux-gnu/ -lpython3.10 2>&1";
 
-    FILE* compile_pipe = popen(compile_command.c_str(), "r");
+    FILE* compile_pipe = popen(std::move(compile_command).c_str(), "r");
     if (!compile_pipe) {
         return {{"rejected", "Compilation execution failed."}};
     }
@@ -69,12 +69,12 @@ int main() {
         compile_output += compile_buffer;
     }
 
-    int compile_result = pclose(compile_pipe);
+    int compile_result = pclose(std::move(compile_pipe));
     if (compile_result != 0) {
-        return {{"rejected", "Compilation failed:\n" + compile_output}};
+        return {{"rejected", "Compilation failed:\n" + std::move(compile_output)}};
     }
 
-    const std::string& execute_command = "LD_LIBRARY_PATH=. " + exec_path;
+    const std::string& execute_command = "LD_LIBRARY_PATH=. " + std::move(exec_path);
     try {
         std::string execute_output;
         {
@@ -91,7 +91,7 @@ int main() {
             pclose(execute_pipe);
         }
 
-        std::string remove_dir_command = "rm -r " + random_folder_name;
+        std::string remove_dir_command = "rm -r " + std::move(random_folder_name);
         int remove_dir_result = system(remove_dir_command.c_str());
         if (remove_dir_result != 0) {
             return {{"rejected", "Failed to remove temporary directory."}};
