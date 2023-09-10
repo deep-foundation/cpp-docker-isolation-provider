@@ -38,12 +38,17 @@ auto fn(auto params) {
 ```cpp
 class HandlerParameters {
 public:
-    DeepClientCppWrapper* deep = nullptr;
+    DeepClientCppWrapper deep;
     json data;
-    HandlerParameters(DeepClientCppWrapper* deepClient, const std::string &jsonData) {
-        deep = deepClient;
+
+    HandlerParameters() = default;
+
+    ~HandlerParameters() = default;
+
+    HandlerParameters(auto deepClient, auto jsonData): deep(deepClient) {
         data = json::parse(jsonData);
     }
+
 };
 ```
 
