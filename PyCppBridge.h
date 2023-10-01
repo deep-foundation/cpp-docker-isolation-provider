@@ -172,7 +172,7 @@ public:
         return std::make_shared<AssociativeArray>(values);
     }
 
-    static std::shared_ptr<DynamicValue> makeJs(const json& json_obj) {
+    static std::shared_ptr<DynamicValue> makeFromJson(const json& json_obj) {
         if (json_obj.is_object()) {
             std::shared_ptr<AssociativeArray> array = std::make_shared<AssociativeArray>();
             for (json::const_iterator it = json_obj.begin(); it != json_obj.end(); ++it) {
@@ -186,7 +186,7 @@ public:
                 } else if (value.is_number_integer()) {
                     array->addValue(key, IntValue::make(value.get<int>()));
                 } else if (value.is_object()) {
-                    array->cppValue[key] = makeJs(value);
+                    array->cppValue[key] = makeFromJson(value);
                 }
             }
             return array;

@@ -85,12 +85,12 @@ auto fn(auto params) {
 auto fn(auto params) {
     std::string originalStr = "DeepFoundation";
 
-    return params.deep.insert(AssociativeArray::makeJs({
+    return params.deep.insert(AssociativeArray::makeFromJson({
         {"type_id", 146},
         {"string", {
-            "data", {
-                "value", std::reverse(originalStr.begin(), originalStr.end()
-            }
+            {"data", {
+                {"value", std::string(originalStr.rbegin(), originalStr.rend())}
+            }}
         }},
         {"from_id", params.data["newLink"]["id"]},
         {"to_id", params.data["newLink"]["id"]}
