@@ -108,8 +108,7 @@ PyObject *PyCppBridge::convertCppArrayToPyObject(const std::shared_ptr<DynamicVa
     } else if (std::shared_ptr<IndexedArray> indexedArray = std::dynamic_pointer_cast<IndexedArray>(sharedPtr)) {
         return PyCppBridge::convertCppArrayToPyList(indexedArray);
     } else if (std::shared_ptr<StringValue> stringValue = std::dynamic_pointer_cast<StringValue>(sharedPtr)) {
-        // std::cout << "This is a StringValue with cppValue: " << stringValue->cppValue << std::endl;
-        return PyUnicode_DecodeUTF8(stringValue->cppValue.c_str(), stringValue->cppValue.size(), nullptr);
+        return PyUnicode_DecodeFSDefault(stringValue->cppValue.c_str());
     } else if (std::shared_ptr<ArrayValue> arrayValue = std::dynamic_pointer_cast<ArrayValue>(sharedPtr)) {
         // std::cout << "This is an ArrayValue" << std::endl;
         Py_INCREF(Py_None);
