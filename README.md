@@ -62,6 +62,21 @@ auto fn(auto params) {
 
 ```cpp
 auto fn(auto params) {
+    return params.data["newLink"]["id"];
+}
+```
+
+```cpp
+auto fn(auto params) {
+    return params.deep->id(
+            StringValue::make("@deep-foundation/core"),
+            StringValue::make("Symbol")
+        );
+}
+```
+
+```cpp
+auto fn(auto params) {
     return params.deep.select(IntValue::make(1))->toJson();
 }
 ```

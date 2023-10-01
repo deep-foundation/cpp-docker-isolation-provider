@@ -56,7 +56,7 @@ std::shared_ptr<DynamicValue> DeepClientCppWrapper::id(const std::shared_ptr<Dyn
 
 std::shared_ptr<DynamicValue> DeepClientCppWrapper::call_python_function(const std::string& function_name,
                                                                             const std::shared_ptr<DynamicValue> &query,
-                                                                            std::shared_ptr<DynamicValue> query2
+                                                                            const std::shared_ptr<DynamicValue> &query2
                                                                             ) {
     std::shared_ptr<DynamicValue> result;
     if (deepClientModule) {

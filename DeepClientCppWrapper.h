@@ -24,7 +24,7 @@ public:
     std::shared_ptr<DynamicValue> call_python_function(
         const std::string& function_name,
         const std::shared_ptr<DynamicValue>& query,
-        std::shared_ptr<DynamicValue> query2 = NoneValue::make()
+        const std::shared_ptr<DynamicValue>& query2 = NoneValue::make()
     );
 };
 
