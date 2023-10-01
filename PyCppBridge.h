@@ -71,7 +71,7 @@ class StringValue : public DynamicValue {
 public:
     std::string cppValue;
 
-    explicit StringValue(std::string val) : cppValue(std::move(val)) {}
+    explicit StringValue(std::string val) : cppValue(val) {}
 
     void print() const override {
         std::cout << "String value: " << cppValue << std::endl;
