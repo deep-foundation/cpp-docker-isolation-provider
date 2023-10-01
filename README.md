@@ -68,7 +68,7 @@ auto fn(auto params) {
 
 ```cpp
 auto fn(auto params) {
-    return params.deep->id(
+    return params.deep.id(
             StringValue::make("@deep-foundation/core"),
             StringValue::make("Symbol")
         );
@@ -100,6 +100,7 @@ apt-get install autoconf cmake make automake libtool git libboost-all-dev libssl
 #apt-get install libboost-python1.74-dev
 cmake .
 make
+./cpp-docker-isolation-provider
 ```
 
 #### Or Local restart docker

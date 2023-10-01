@@ -27,9 +27,9 @@ public:
 
 class IntValue : public DynamicValue {
 public:
-    int cppValue;
+    long cppValue;
 
-    explicit IntValue(int val) : cppValue(val) {}
+    explicit IntValue(long val) : cppValue(val) {}
 
     void print() const override {
         std::cout << "Int value: " << cppValue << std::endl;
@@ -41,7 +41,7 @@ public:
                 ;
     }
 
-    static auto make(int val) {
+    static auto make(long val) {
         return std::make_shared<IntValue>(val);
     }
 };

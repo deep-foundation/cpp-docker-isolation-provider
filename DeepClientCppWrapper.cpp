@@ -72,7 +72,10 @@ std::shared_ptr<DynamicValue> DeepClientCppWrapper::call_python_function(const s
             if (pyResult) {
                 if (PyUnicode_Check(pyResult)) {
                     const char* str_value = PyUnicode_AsUTF8(pyResult);
-                    throw std::runtime_error(str_value);
+                    return StringValue::make(str_value);
+                } else if (PyLong_Check(pyResult)) {
+                    long int_value = PyLong_AsLong(pyResult);
+                    return IntValue::make(int_value);
                 } else if (PyList_Check(pyResult)) {
                     // std::cout << "This is an IndexedArray" << std::endl;
                     return PyCppBridge::convertPyListToCppArray(pyResult);
