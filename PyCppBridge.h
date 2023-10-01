@@ -12,6 +12,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <map>
+#include <algorithm>
 
 using json = nlohmann::json;
 
@@ -148,8 +149,8 @@ public:
         }
     }
 
-    void addValue(const std::string& key, int value) {
-        cppValue[key] = std::make_shared<IntValue>(value);
+    void addValue(const std::string& key, std::shared_ptr<DynamicValue> value) {
+        cppValue[key] = value;
     }
 
     void print() const override {
@@ -169,6 +170,29 @@ public:
 
     static auto make(const std::initializer_list<std::pair<std::string, int>>& values) {
         return std::make_shared<AssociativeArray>(values);
+    }
+
+    static std::shared_ptr<DynamicValue> makeJs(const json& json_obj) {
+        if (json_obj.is_object()) {
+            std::shared_ptr<AssociativeArray> array = std::make_shared<AssociativeArray>();
+            for (json::const_iterator it = json_obj.begin(); it != json_obj.end(); ++it) {
+                const std::string& key = it.key();
+                const json& value = it.value();
+                
+                if (value.is_string()) {
+                    array->addValue(key, StringValue::make(value.get<std::string>()));
+                } else if (value.is_number_float()) {
+                    array->addValue(key, FloatValue::make(value.get<double>()));
+                } else if (value.is_number_integer()) {
+                    array->addValue(key, IntValue::make(value.get<int>()));
+                } else if (value.is_object()) {
+                    array->cppValue[key] = makeJs(value);
+                }
+            }
+            return array;
+        } else {
+            return NoneValue::make();
+        }
     }
 };
 
