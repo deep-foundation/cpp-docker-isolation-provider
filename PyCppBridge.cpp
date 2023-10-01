@@ -1,4 +1,4 @@
-#include "compiler.h"
+#include "PyCppBridge.h"
 
 std::shared_ptr<AssociativeArray> PyCppBridge::convertPyDictToCppArray(PyObject *pyDict) {
     auto cppArray = std::make_shared<AssociativeArray>();

@@ -19,6 +19,9 @@ class DynamicValue {
 public:
     virtual void print() const = 0;
     [[nodiscard]] virtual json toJson() const = 0;
+    virtual bool isNull() const {
+        return false;
+    }
     virtual ~DynamicValue() = default;
 };
 
@@ -87,8 +90,6 @@ public:
 
 class NoneValue : public DynamicValue {
 public:
-    std::string cppValue;
-
     NoneValue() = default;
 
     void print() const override {
@@ -101,8 +102,12 @@ public:
         ;
     }
 
-    static auto make(auto val) {
-        return std::make_shared<NoneValue>(val);
+    static auto make() {
+        return std::make_shared<NoneValue>();
+    }
+
+    bool isNull() const override {
+        return true;
     }
 };
 

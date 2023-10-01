@@ -50,19 +50,23 @@ std::shared_ptr<DynamicValue> DeepClientCppWrapper::serial(const std::shared_ptr
     return call_python_function("serial", query);
 }
 
-std::shared_ptr<DynamicValue> DeepClientCppWrapper::id(const std::shared_ptr<DynamicValue> &query) {
-    return call_python_function("id", query);
+std::shared_ptr<DynamicValue> DeepClientCppWrapper::id(const std::shared_ptr<DynamicValue> &query, const std::shared_ptr<DynamicValue> &query2) {
+    return call_python_function("id", query, query2);
 }
 
-std::shared_ptr<DynamicValue> DeepClientCppWrapper::call_python_function(const std::string& function_name, const std::shared_ptr<DynamicValue> &query) {
+std::shared_ptr<DynamicValue> DeepClientCppWrapper::call_python_function(const std::string& function_name,
+                                                                            const std::shared_ptr<DynamicValue> &query,
+                                                                            std::shared_ptr<DynamicValue> query2
+                                                                            ) {
     std::shared_ptr<DynamicValue> result;
     if (deepClientModule) {
         PyObject* pyFunc = PyObject_GetAttrString(deepClientModule, function_name.c_str());
         if (pyFunc && PyCallable_Check(pyFunc)) {
-            PyObject* pyArgs = PyTuple_Pack(3,
+            PyObject* pyArgs = PyTuple_Pack(query2->isNull() ? 3 : 4,
                                             Py_BuildValue("s", token.c_str()),
                                             Py_BuildValue("s", url.c_str()),
-                                            PyCppBridge::convertCppArrayToPyObject(query)
+                                            PyCppBridge::convertCppArrayToPyObject(query),
+                                            query2->isNull() ? nullptr : PyCppBridge::convertCppArrayToPyObject(query2)
             );
             PyObject* pyResult = PyObject_CallObject(pyFunc, pyArgs);
             if (pyResult) {

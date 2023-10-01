@@ -4,9 +4,11 @@
 .idea
 __pycache__
 *__pycache__
+cmake-build-debug/
 CMakeFiles/
 venv/
 CMakeCache.txt
+LICENSE
 Makefile
 README.md
 *.cmake

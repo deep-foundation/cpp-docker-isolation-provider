@@ -20,8 +20,12 @@ public:
     std::shared_ptr<DynamicValue> update(const std::shared_ptr<DynamicValue>& query);
     std::shared_ptr<DynamicValue> deleteFunc(const std::shared_ptr<DynamicValue>& query);
     std::shared_ptr<DynamicValue> serial(const std::shared_ptr<DynamicValue>& query);
-    std::shared_ptr<DynamicValue> id(const std::shared_ptr<DynamicValue>& query);
-    std::shared_ptr<DynamicValue> call_python_function(const std::string& function_name, const std::shared_ptr<DynamicValue>& query);
+    std::shared_ptr<DynamicValue> id(const std::shared_ptr<DynamicValue>& query, const std::shared_ptr<DynamicValue>& query2);
+    std::shared_ptr<DynamicValue> call_python_function(
+        const std::string& function_name,
+        const std::shared_ptr<DynamicValue>& query,
+        std::shared_ptr<DynamicValue> query2 = NoneValue::make()
+    );
 };
 
 #endif // DEEP_CLIENT_CPP_WRAPPER_H
